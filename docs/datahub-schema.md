@@ -25,11 +25,13 @@ urn:li:dataset:(urn:li:dataPlatform:slaydar,<garment_id>,PROD)
 | ownership history across resale | new dataset URN per ownership period + `UpstreamLineage` | `transfer-owner` creates a new URN, sets `UpstreamLineage.upstreams = [previous urn]` |
 | condition score as verified assertion | DataHub Assertions (stretch, Tier 2+) | fallback: keep as customProperties only if time-constrained |
 
-## Staleness thresholds (fill in once agreed)
-- Never-worn: not checked in within **N days** of catalog date → `Deprecation` note "never worn"
-- Overworn: wear_count within **M days** exceeds **K** → `Deprecation` note "overworn"
+## Staleness thresholds (LOCKED — Day 1)
+Values live in `api/app/config.py` (`Settings`); change them there and mirror here in the same commit.
+- **Never-worn:** catalogued ≥ **30 days** ago with **0** check-ins → `Deprecation` note `"never worn"`, status `flagged-unworn`.
+- **Overworn:** **≥ 4** check-ins within a rolling **7-day** window → `Deprecation` note `"overworn"`, status `flagged-overworn`.
+- **Condition score:** starts at **100**, drops **1.5** per wear (clamped 0–100). Kept in `customProperties`; Assertions are Tier 2.
 
-(Pick N/M/K on Day 0 or Day 1 — needs a number for the demo to look intentional, not arbitrary.)
+These numbers are demo-tuned: 4-in-7 trips on the "wore it every day this week" repeat-outfit story; 30-day never-worn matches a catalog-then-forget item.
 
 ## Seed script
 One-time script (run before Day 1) to create the glossary node + terms so `GlossaryTerms` aspect writes don't fail on missing term URNs. Keep it in `/api/scripts/seed_glossary.py`.
