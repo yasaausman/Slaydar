@@ -18,3 +18,20 @@ Catalogs a closet from photos, tracks real wear history, and turns that history 
 
 ## Shared DataHub instance
 Both of you point at one shared DataHub instance (not separate local ones) so demo data stays consistent. URL/access details: TBD — whoever stands it up on Day 0, note it in `docs/datahub-schema.md`.
+
+## Sync workflow (both people, every step)
+We work **directly on `main`** — no feature branches, no PRs. This keeps a 2-person hackathon in sync with the least ceremony. After completing each meaningful step (a working commit-sized chunk), run this loop so neither person drifts:
+
+```bash
+git add -A
+git commit -m "<what changed>"
+git pull --rebase
+git push
+```
+
+Rules:
+- **Pull before you start** each work session (`git pull --rebase`) so you're building on the other person's latest.
+- Commit **small and often** — one logical step per commit. Don't batch a whole day into one push.
+- If a rebase conflict hits, resolve it in the two files most likely to collide: `docs/api-contract.md` and `docs/datahub-schema.md`. Whoever changes the contract updates the doc in the **same commit**.
+- Never leave `main` in a broken state overnight — the other person pulls it first thing.
+- Person A owns `/api` + `docs/datahub-schema.md`; Person B owns `/web`. Editing across that line is fine, but call it out in the commit message.
