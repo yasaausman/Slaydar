@@ -16,7 +16,7 @@ This plan turns `slaydar-hackathon-summary.md` into an executable build: who own
 
 **Person B — Agents & Frontend**
 - Next.js (TypeScript) frontend: upload, daily check-in, Slaydar chat, listing/resale screen
-- Claude-powered agents that run *inside the app* at runtime (separate from Claude Code, which you're both using to write the code): vision extraction agent, check-in match agent, roast-generation agent
+- Gemini-powered agents that run *inside the app* at runtime (separate from Claude Code, which you're both using to write the code — the app itself calls Google's Gemini API, chosen for its free tier): vision extraction agent, check-in match agent, roast-generation agent
 - Slaydar voice/system prompt, demo video, pitch deck
 
 **Shared, written on Day 0 before either of you writes app code:** the API contract between frontend and backend (`docs/api-contract.md`) and the DataHub schema (`docs/datahub-schema.md`, see §3). Once that's locked, you can build in parallel against mocks without blocking each other.
@@ -28,7 +28,7 @@ This plan turns `slaydar-hackathon-summary.md` into an executable build: who own
 ```
 Next.js app (Person B)                FastAPI service (Person A)
  - upload / check-in / chat UI  --->   - /garments (create)
- - calls Anthropic API directly        - /garments/{id}/checkin
+ - calls Gemini API directly            - /garments/{id}/checkin
    for: vision extraction,             - /garments/{id}/transfer-owner
    check-in matching, roast text       - /garments/{id}/lineage
                                         - /closet/{owner_id}
@@ -39,7 +39,7 @@ Next.js app (Person B)                FastAPI service (Person A)
                                         localhost:9002 UI / :8080 GMS
 ```
 
-Two services, one per person, talking over a small REST contract. The app's runtime Claude calls (vision/roast) live in the Next.js server actions — no need for a third service.
+Two services, one per person, talking over a small REST contract. The app's runtime Gemini calls (vision/roast) live in the Next.js server actions — no need for a third service.
 
 **Logistics:** run one **shared** DataHub instance both of you point at (whoever has a spare machine, or a small cloud VM), not two local instances that drift apart. You want one consistent dataset for the demo, and it lets you *show the live DataHub UI* during the pitch.
 
@@ -116,7 +116,7 @@ Put this verbatim in the roast-agent's system prompt on Day 0 so Person B isn't 
 | Day | Date | Person A (DataHub/Backend) | Person B (Agents/Frontend) |
 |---|---|---|---|
 | 0 | Tue Aug 4 | Lock data contract + DataHub schema (§3/§4). `datahub docker quickstart` running, seed glossary terms. | Scaffold Next.js app + routes with mock data. Lock Slaydar system prompt (§5). |
-| 1 | Wed Aug 5 | FastAPI skeleton; `datahub_client.py` emitter: create-entity, ownership, customProperties. | Upload UI; vision extraction agent (photo → structured JSON) against Anthropic API. |
+| 1 | Wed Aug 5 | FastAPI skeleton; `datahub_client.py` emitter: create-entity, ownership, customProperties. | Upload UI; vision extraction agent (photo → structured JSON) against Gemini API. |
 | 2 | Thu Aug 6 | `/garments` endpoint live; wire vision-agent output → real DataHub writes. | Wire upload flow to `/garments`; live tagging UI as items land. |
 | 3 | Fri Aug 7 | Check-in endpoint: wear_count/last_worn update, `Deprecation` flag logic (overworn/unworn). | Check-in UI + confirm-the-match flow; roast agent reading real stats from backend. |
 | 4 | Sat Aug 8 | Resale: new dataset URN + lineage edge on transfer-owner; condition-score formula. | Overworn/unworn banner → resale CTA; listing screen showing condition score. Stretch: link-paste (Person A) + cross-user match UI if ahead of schedule. |

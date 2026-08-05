@@ -1,6 +1,6 @@
 # Person B step-by-step guide — Frontend & Agents
 
-For the person building `/web` (Next.js) plus the runtime Claude calls (vision extraction, check-in matching, roast generation). Written for a beginner — every step spells out the exact commands.
+For the person building `/web` (Next.js) plus the runtime Gemini calls (vision extraction, check-in matching, roast generation) — Gemini instead of a paid API specifically to keep this free. Written for a beginner — every step spells out the exact commands.
 
 **The rhythm, every single step** (this matches the "Sync workflow" locked in the root [CLAUDE.md](../CLAUDE.md) — we work directly on `main`, no branches, no PRs):
 1. `git pull --rebase` — get anything Person A (or past-you) pushed, **before** you start.
@@ -22,7 +22,9 @@ If that errors or shows something below v18, install it:
 brew install node
 ```
 
-**Get an Anthropic API key** (this is for *your app* to call Claude at runtime — separate from Claude Code, which you're using to write the code). Go to console.anthropic.com, create a key, and keep it somewhere safe. You'll paste it into a `.env.local` file in Step 1 — never into a file that gets committed to git.
+**Get a free Gemini API key** (this is for *your app* to call an AI model at runtime — separate from Claude Code, which you're using to write the code). We're using Google's Gemini API instead of a paid one specifically because it has a genuinely free tier. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey), sign in with a Google account, and it'll generate a key for you automatically — no credit card needed. Keep the key somewhere safe. You'll paste it into a `.env.local` file in Step 1 — never into a file that gets committed to git.
+
+Free tier notes: rate limits are generous enough for a week of dev + a live demo, but they vary — check your actual limits under "Rate Limits" at [aistudio.google.com](https://aistudio.google.com) once you have a key. If you ever hit a limit mid-testing, just wait a minute and retry; it resets fast.
 
 **Quick git vocabulary**, since you'll do this a lot:
 - `pull` = download the latest code others pushed
@@ -50,7 +52,7 @@ Open `http://localhost:3000` in a browser — you should see the default Next.js
 
 Create `web/.env.local` (this file is git-ignored by default — double check by running `cat .gitignore | grep env` inside `/web` before you paste in a real key):
 ```
-ANTHROPIC_API_KEY=sk-your-key-here
+GEMINI_API_KEY=your-key-here
 ```
 
 Back in the repo root:
@@ -114,11 +116,26 @@ git pull --rebase
 
 ```bash
 cd web
-npm install @anthropic-ai/sdk
+npm install @google/genai
 cd ..
 ```
 
-Create `web/src/app/api/extract/route.ts` — a Next.js API route that takes an uploaded image, sends it to Claude with a system prompt asking for the garment fields as JSON (category, color, material, brand, style_tags), and returns that JSON.
+Create `web/src/app/api/extract/route.ts` — a Next.js API route that takes an uploaded image and asks Gemini to return the garment fields as JSON (category, color, material, brand, style_tags). Rough shape (check the current SDK docs for exact method names when you build this, since the JS SDK evolves):
+
+```typescript
+import { GoogleGenAI } from "@google/genai";
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+// upload the image, then something like:
+const result = await ai.interactions.create({
+  model: "gemini-3.6-flash", // free-tier, vision-capable
+  input: [
+    { type: "text", text: "Extract category, color, material, brand, and style_tags for this garment as JSON. Return only JSON." },
+    { type: "image", uri: uploadedFile.uri, mime_type: uploadedFile.mimeType },
+  ],
+});
+```
 
 Wire the "Extract" button on the upload page to call `/api/extract` and show the raw JSON result on screen (just `<pre>{JSON.stringify(result)}</pre>` for now — polish comes later).
 
@@ -162,11 +179,11 @@ git push
 git pull --rebase
 ```
 
-Build `web/src/app/api/match/route.ts`: takes a check-in photo + the current closet list, asks Claude to propose the most likely `garment_id` match. Build the check-in page UI: upload a photo, show the proposed match, let the user confirm or pick a different item.
+Build `web/src/app/api/match/route.ts`: takes a check-in photo + the current closet list, asks Gemini to propose the most likely `garment_id` match (same `ai.interactions.create` pattern as Step 4, just with the closet list as extra text context alongside the image). Build the check-in page UI: upload a photo, show the proposed match, let the user confirm or pick a different item.
 
 On confirm, call `POST /garments/{id}/checkin` on the backend.
 
-Build `web/src/app/api/roast/route.ts` using the **locked system prompt from [PLAN.md §5](../PLAN.md#5-slaydar-voice--locked-system-prompt-resolves-open-question-3)** — paste it in verbatim. Pass in the real stats fetched for the confirmed garment; never let the model invent a number. Display the roast with its stat badge on the check-in confirmation screen.
+Build `web/src/app/api/roast/route.ts` using the **locked system prompt from [PLAN.md §5](../PLAN.md#5-slaydar-voice--locked-system-prompt-resolves-open-question-3)** — paste it in as the instructions/system text for the Gemini call, same as before. Pass in the real stats fetched for the confirmed garment; never let the model invent a number. Display the roast with its stat badge on the check-in confirmation screen.
 
 ```bash
 git add -A
@@ -226,6 +243,12 @@ git pull --rebase
 Confirm nothing was missed, do one last rehearsal, then submit on Devpost before the deadline.
 
 ---
+
+## Keeping this free
+
+- Gemini's free tier is the only external cost surface in this whole project — DataHub, FastAPI, and Next.js all run locally at $0.
+- Don't call the real Gemini API on every UI tweak. Use the mock data from Step 2 while you're styling things, and only hit the real API when you're actually testing extraction/matching/roast logic.
+- No hosting needed either — run everything locally (`npm run dev`, `uvicorn`, `docker`) and demo straight from your laptop. If you want a public link later, revisit then; don't add hosting cost this week for no reason.
 
 ## If something goes wrong
 
