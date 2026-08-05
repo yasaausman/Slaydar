@@ -139,5 +139,6 @@ Tier 2 items (link-paste, condition-score listing screen, cross-user match) only
 ## 8. Working together in Claude Code
 
 - Monorepo: `/web` (Next.js, Person B) and `/api` (FastAPI, Person A), each with its own `CLAUDE.md` scoped to that service, plus a root `CLAUDE.md` linking to `docs/api-contract.md` and `docs/datahub-schema.md` — see root `CLAUDE.md` in this repo.
-- Feature branches per workstream (`backend/datahub-emitter`, `frontend/checkin-flow`), small PRs, rebase daily to avoid Day 5 conflict pileup.
-- If either of you changes the API contract mid-week, update `docs/api-contract.md` in the same PR — that file is what keeps both Claude Code sessions honest about the interface without a live meeting.
+- **We work directly on `main`, no feature branches or PRs** (locked in root `CLAUDE.md`'s "Sync workflow" section) — the least ceremony for a 2-person hackathon. The loop: `git add -A && git commit -m "..." && git pull --rebase && git push`, run after every commit-sized chunk of work, not batched into one end-of-day push.
+- If either of you changes the API contract or DataHub schema mid-week, update `docs/api-contract.md` / `docs/datahub-schema.md` in the **same commit** — that's what keeps both Claude Code sessions honest about the interface without a live meeting.
+- Person A owns `/api`; Person B owns `/web`. Crossing that line is fine, just say so in the commit message.
