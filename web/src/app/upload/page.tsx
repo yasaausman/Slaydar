@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { DEMO_OWNER_ID } from "@/lib/constants";
+import type { Garment } from "@/lib/mock-garments";
 import type { ExtractedGarment } from "@/lib/types";
 import LinkResolveForm from "@/components/LinkResolveForm";
 
@@ -16,10 +18,31 @@ type ExtractionResult =
   | { status: "saved"; data: ExtractedGarment; garmentId: string }
   | { status: "error"; message: string };
 
+type CrossMatch = { status: "checking" } | { status: "found"; garment: Garment } | { status: "none" };
+
 export default function UploadPage() {
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
   const [isExtracting, setIsExtracting] = useState(false);
   const [results, setResults] = useState<Record<string, ExtractionResult>>({});
+  const [crossMatches, setCrossMatches] = useState<Record<string, CrossMatch>>({});
+
+  async function checkCrossUserMatch(key: string, item: ExtractedGarment) {
+    setCrossMatches((prev) => ({ ...prev, [key]: { status: "checking" } }));
+    try {
+      const res = await fetch("/api/cross-user-match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item, excludeOwnerId: DEMO_OWNER_ID }),
+      });
+      const body = await res.json();
+      setCrossMatches((prev) => ({
+        ...prev,
+        [key]: body.match ? { status: "found", garment: body.match } : { status: "none" },
+      }));
+    } catch {
+      setCrossMatches((prev) => ({ ...prev, [key]: { status: "none" } }));
+    }
+  }
 
   function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -73,6 +96,7 @@ export default function UploadPage() {
             ...prev,
             [photo.previewUrl]: { status: "saved", data, garmentId: saved.garment_id },
           }));
+          checkCrossUserMatch(photo.previewUrl, data);
         } catch (err) {
           setResults((prev) => ({
             ...prev,
@@ -146,6 +170,30 @@ export default function UploadPage() {
                     <pre className="mt-1 overflow-x-auto rounded bg-gray-100 p-2 text-xs dark:bg-white/10">
                       {JSON.stringify(result.data, null, 2)}
                     </pre>
+                    {crossMatches[photo.previewUrl]?.status === "checking" && (
+                      <p className="mt-1 text-xs text-gray-400">Checking if anyone else has this…</p>
+                    )}
+                    {crossMatches[photo.previewUrl]?.status === "found" && (
+                      <div className="mt-1 rounded-md border border-fuchsia-300 bg-fuchsia-50 p-2 text-xs dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
+                        {(() => {
+                          const cm = crossMatches[photo.previewUrl];
+                          if (cm.status !== "found") return null;
+                          return (
+                            <>
+                              <p className="font-semibold text-fuchsia-700 dark:text-fuchsia-300">
+                                🔎 {cm.garment.owner_id} has this too
+                              </p>
+                              <Link
+                                href={`/listing/${cm.garment.garment_id}`}
+                                className="font-medium text-fuchsia-700 underline dark:text-fuchsia-300"
+                              >
+                                View their listing
+                              </Link>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    )}
                   </>
                 )}
               </div>

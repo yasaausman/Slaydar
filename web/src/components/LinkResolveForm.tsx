@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { DEMO_OWNER_ID } from "@/lib/constants";
+import type { Garment } from "@/lib/mock-garments";
 import type { ExtractedGarment } from "@/lib/types";
 
 type Stage =
@@ -12,13 +14,32 @@ type Stage =
   | { step: "saved"; garmentId: string }
   | { step: "error"; message: string };
 
+type CrossMatch = { status: "checking" } | { status: "found"; garment: Garment } | { status: "none" };
+
 export default function LinkResolveForm() {
   const [url, setUrl] = useState("");
   const [stage, setStage] = useState<Stage>({ step: "idle" });
+  const [crossMatch, setCrossMatch] = useState<CrossMatch | null>(null);
+
+  async function checkCrossUserMatch(item: ExtractedGarment) {
+    setCrossMatch({ status: "checking" });
+    try {
+      const res = await fetch("/api/cross-user-match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item, excludeOwnerId: DEMO_OWNER_ID }),
+      });
+      const body = await res.json();
+      setCrossMatch(body.match ? { status: "found", garment: body.match } : { status: "none" });
+    } catch {
+      setCrossMatch({ status: "none" });
+    }
+  }
 
   async function handleResolve(e: React.FormEvent) {
     e.preventDefault();
     setStage({ step: "resolving" });
+    setCrossMatch(null);
     try {
       const res = await fetch("/api/resolve-link", {
         method: "POST",
@@ -28,6 +49,7 @@ export default function LinkResolveForm() {
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? `Request failed with ${res.status}`);
       setStage({ step: "preview", data: body });
+      checkCrossUserMatch(body);
     } catch (err) {
       setStage({ step: "error", message: err instanceof Error ? err.message : "Resolving link failed" });
     }
@@ -91,6 +113,29 @@ export default function LinkResolveForm() {
           >
             {stage.step === "saving" ? "Saving…" : "Save to closet"}
           </button>
+
+          {crossMatch?.status === "checking" && (
+            <p className="mt-3 text-xs text-gray-400">Checking if anyone else has this…</p>
+          )}
+          {crossMatch?.status === "found" && (
+            <div className="mt-3 rounded-md border border-fuchsia-300 bg-fuchsia-50 p-3 text-xs dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
+              <p className="font-semibold text-fuchsia-700 dark:text-fuchsia-300">
+                🔎 Someone else has this exact item
+              </p>
+              <p className="mt-1 text-gray-600 dark:text-gray-300">
+                <strong>{crossMatch.garment.owner_id}</strong> owns a {crossMatch.garment.color}{" "}
+                {crossMatch.garment.category}
+                {crossMatch.garment.brand ? ` (${crossMatch.garment.brand})` : ""} — condition score{" "}
+                {crossMatch.garment.condition_score}.
+              </p>
+              <Link
+                href={`/listing/${crossMatch.garment.garment_id}`}
+                className="mt-1 inline-block font-medium text-fuchsia-700 underline dark:text-fuchsia-300"
+              >
+                View their listing
+              </Link>
+            </div>
+          )}
         </div>
       )}
 
