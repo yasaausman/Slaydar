@@ -154,13 +154,19 @@ git push
 git pull --rebase
 ```
 
-Check with Person A (or `docs/api-contract.md`) whether `POST /garments` is live yet. Add `web/.env.local`:
+✅ **The backend is already live and reachable from your machine** — Person A stood up DataHub v1.7.0 and exposed the FastAPI `/api` through a cloudflared tunnel. You don't need Person A's machine or a local backend; just point at the tunnel URL. Add it to `web/.env.local`:
 ```
-API_BASE_URL=http://localhost:8000
+API_BASE_URL=https://novelty-friends-dash-opposite.trycloudflare.com
 ```
-(or wherever Person A's FastAPI service runs)
+Sanity-check it works from your machine before wiring anything:
+```bash
+curl https://novelty-friends-dash-opposite.trycloudflare.com/health
+```
+You should get `{"status":"ok",...,"datahub_dry_run":false}` — `datahub_dry_run:false` means your calls write to the **real** DataHub, so anything you create shows up in the demo's DataHub UI.
 
-Update the upload flow: after extraction, `POST` the result to `${API_BASE_URL}/garments`. Note that per `api/CLAUDE.md`, the backend runs in **dry-run mode** if DataHub itself isn't reachable yet — so `/garments` can respond even before DataHub is fully wired up. If the FastAPI service isn't running at all yet, keep using the mock data from Step 2 and leave a `// TODO: swap for real API_BASE_URL call once /api is live` comment — don't block on Person A.
+⚠️ **This URL is ephemeral** — it changes whenever Person A's tunnel restarts (their laptop sleeping/rebooting, etc.). The current one always lives at the top of [docs/api-contract.md](api-contract.md); if `curl /health` stops resolving, `git pull --rebase` for the latest URL or ping Person A to restart the tunnel. Because it's in one env var, swapping it is a one-line change.
+
+Update the upload flow: after extraction, `POST` the result to `${API_BASE_URL}/garments`. (If the tunnel is ever down mid-work, fall back to the Step 2 mock data and leave a `// TODO: swap for real API_BASE_URL call` comment — don't block on Person A. The backend also has a **dry-run mode** noted in `api/CLAUDE.md`, but right now it's fully live, not dry-run.)
 
 Build a simple closet grid page (`/closet`) that lists garments (from the real API once available, mock data until then) as cards.
 
