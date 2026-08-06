@@ -27,4 +27,14 @@ uvicorn app.main:app --reload --port 8000
 Point `DATAHUB_GMS_URL` at the shared instance (default `http://localhost:8080`). If DataHub is unreachable, the client runs in **dry-run mode** (logs the MCP it *would* emit) so the API still boots for frontend integration.
 
 ## Staleness thresholds
-Defined in `app/config.py` and documented in `../docs/datahub-schema.md`. Deprecation logic lives in `datahub_client.py` — one place, so the numbers are intentional, not scattered magic values.
+Defined in `app/config.py` and documented in `../docs/datahub-schema.md`. Deprecation logic lives in `service.py` (`_staleness`) — one place, so the numbers are intentional, not scattered magic values.
+
+## Testing
+```bash
+cd api && source .venv/bin/activate
+pip install -r requirements-dev.txt   # once
+pytest                                 # tests/ run in FORCED dry-run — no live DataHub needed
+```
+`tests/conftest.py` sets `SLAYDAR_FORCE_DRY_RUN=true` before importing the app, so the suite is hermetic and never pollutes the shared instance. For a live end-to-end check against a running DataHub, use `python -m scripts.smoke_test` instead (that one *does* emit).
+
+**Known gap (Day 3):** never-worn `Deprecation` logic exists and is unit-tested (`_staleness`), but nothing calls it for a 0-wear item — staleness is only recomputed on check-in, and a never-worn item never checks in. Day 3 adds the trigger (a staleness sweep endpoint, or lazy evaluation on `/closet`).
