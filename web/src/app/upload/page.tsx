@@ -17,8 +17,12 @@ type ExtractedGarment = {
 
 type ExtractionResult =
   | { status: "pending" }
-  | { status: "done"; data: ExtractedGarment }
+  | { status: "saving"; data: ExtractedGarment }
+  | { status: "saved"; data: ExtractedGarment; garmentId: string }
   | { status: "error"; message: string };
+
+// Hardcoded for the hackathon demo — no auth/login flow yet.
+const DEMO_OWNER_ID = "u-demo";
 
 export default function UploadPage() {
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
@@ -61,7 +65,22 @@ export default function UploadPage() {
             throw new Error(body.error ?? `Request failed with ${res.status}`);
           }
           const data: ExtractedGarment = await res.json();
-          setResults((prev) => ({ ...prev, [photo.previewUrl]: { status: "done", data } }));
+          setResults((prev) => ({ ...prev, [photo.previewUrl]: { status: "saving", data } }));
+
+          const saveRes = await fetch("/api/garments", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ owner_id: DEMO_OWNER_ID, ...data }),
+          });
+          if (!saveRes.ok) {
+            const body = await saveRes.json().catch(() => ({}));
+            throw new Error(body.error ?? `Saving to closet failed with ${saveRes.status}`);
+          }
+          const saved = await saveRes.json();
+          setResults((prev) => ({
+            ...prev,
+            [photo.previewUrl]: { status: "saved", data, garmentId: saved.garment_id },
+          }));
         } catch (err) {
           setResults((prev) => ({
             ...prev,
@@ -121,13 +140,21 @@ export default function UploadPage() {
                 {result?.status === "pending" && (
                   <p className="mt-2 text-xs text-gray-400">Tagging…</p>
                 )}
+                {result?.status === "saving" && (
+                  <p className="mt-2 text-xs text-gray-400">Saving to closet…</p>
+                )}
                 {result?.status === "error" && (
                   <p className="mt-2 text-xs text-red-500">{result.message}</p>
                 )}
-                {result?.status === "done" && (
-                  <pre className="mt-2 overflow-x-auto rounded bg-gray-100 p-2 text-xs dark:bg-white/10">
-                    {JSON.stringify(result.data, null, 2)}
-                  </pre>
+                {result?.status === "saved" && (
+                  <>
+                    <p className="mt-2 text-xs font-medium text-green-600">
+                      Saved to closet ({result.garmentId})
+                    </p>
+                    <pre className="mt-1 overflow-x-auto rounded bg-gray-100 p-2 text-xs dark:bg-white/10">
+                      {JSON.stringify(result.data, null, 2)}
+                    </pre>
+                  </>
                 )}
               </div>
             );
