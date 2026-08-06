@@ -1,5 +1,13 @@
 # Person B step-by-step guide — Frontend & Agents
 
+> **📣 STATUS — Aug 6: demo data is READY.** The backend is fully live on the **stable** URL `https://unsterile-dipper-degrading.ngrok-free.dev` (set it as `API_BASE_URL` in `web/.env.local` — it won't change). DataHub was reset to a clean, pristine demo closet for `owner_id = "ishani"`:
+> - **14 black t-shirts, only 3 worn** → the "list the other 11" roast stat lands exactly; the other 11 are `flagged-unworn`.
+> - **1 overworn hoodie** (`flagged-overworn`, cost/wear $15).
+> - **1 denim jacket resold `ishani → alex → sam`** — the lineage-graph demo moment (verified rendering in the DataHub UI).
+> - Plus jeans + blazer + 3 worn tees (`active`).
+>
+> Quick check from your machine: `curl https://unsterile-dipper-degrading.ngrok-free.dev/closet/ishani` should return 18 items. Build/point your closet, check-in, roast, and listing screens at this and you're demoing on real data. If it ever fails to resolve, Person A's laptop/tunnel is just down at that moment — ping them.
+
 For the person building `/web` (Next.js) plus the runtime Gemini calls (vision extraction, check-in matching, roast generation) — Gemini instead of a paid API specifically to keep this free. Written for a beginner — every step spells out the exact commands.
 
 **The rhythm, every single step** (this matches the "Sync workflow" locked in the root [CLAUDE.md](../CLAUDE.md) — we work directly on `main`, no branches, no PRs):
