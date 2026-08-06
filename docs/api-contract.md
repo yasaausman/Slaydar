@@ -43,7 +43,7 @@ https://novelty-friends-dash-opposite.trycloudflare.com
 | POST | `/garments/evaluate-staleness` | `{ "owner_id"?: "string" }` (or empty `{}`) | `[garment object]` (evaluated set) | **staleness sweep** — flags **never-worn** items (`Deprecation` + status `flagged-unworn`). Omit body / owner_id to sweep everything; pass `owner_id` to scope to one closet. Idempotent, re-runnable. See "never-worn trigger" below. |
 | POST | `/garments/{id}/transfer-owner` | `{ "new_owner_id": "string" }` | garment object (new garment_id) | creates new dataset URN for the new ownership period, links via `UpstreamLineage` to the previous one |
 | GET | `/garments/{id}/lineage` | — | ownership-chain summary (list of past garment_ids/owners) | powers the demo's lineage moment |
-| POST | `/garments/resolve-link` | `{ "url": "string" }` | garment object (unsaved, for confirm-before-create) | Tier 2 — schema.org Product parsing. **Currently a 501 stub in `/api`, not called by `/web`** — see note below. |
+| POST | `/garments/resolve-link` | `{ "url": "string" }` | — | **Intentionally 501 in `/api`.** Link resolution needs the LLM call, which by architecture lives only in `/web`. `/web` owns this end-to-end and reuses `POST /garments` to save — see note below. Not a stub to finish. |
 
 ### Deprecation flags: overworn vs never-worn (for Person B)
 Two staleness signals, set by two different triggers — both surface as `status` on the garment object:

@@ -103,7 +103,14 @@ def lineage(garment_id: str) -> LineageResponse:
     return result
 
 
-@app.post("/garments/resolve-link", response_model=Garment)
+@app.post("/garments/resolve-link")
 def resolve_link(req: ResolveLinkRequest) -> Garment:
-    # Tier 2 — schema.org Product parsing. Not implemented yet.
-    raise HTTPException(status_code=501, detail="resolve-link is Tier 2, not implemented")
+    # Intentionally 501: link resolution needs the Gemini vision/normalization
+    # call, and by architecture ALL runtime LLM calls live in /web, never /api.
+    # /web owns this end-to-end (POST /api/resolve-link, Next.js) and reuses the
+    # normal POST /garments save flow. Not a stub-to-finish — a deliberate split.
+    raise HTTPException(
+        status_code=501,
+        detail="resolve-link is handled in /web (needs the LLM call, which /api never makes). "
+               "Use the Next.js /api/resolve-link route; the backend intentionally does not implement this.",
+    )
