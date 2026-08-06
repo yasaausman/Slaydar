@@ -14,6 +14,12 @@ https://unsterile-dipper-degrading.ngrok-free.dev
 - If it stops resolving, Person A just needs the tunnel running again: `cd api && ./scripts/demo_up.sh` (same URL comes back).
 - No auth on the API — fine for the hackathon, but don't post the URL publicly.
 
+**⚠️ ngrok free-tier browser warning — send this header on API calls.** ngrok shows an HTML interstitial ("You are about to visit…") for requests with a *browser* User-Agent. Next.js **server-side** fetches (server components, route handlers) use a node UA and bypass it automatically — so normal SSR works. But any **client-side / in-browser** `fetch` to the API gets the HTML page instead of JSON and will fail to parse. Fix: add this header to API requests from `/web`:
+```
+ngrok-skip-browser-warning: true
+```
+(Opening the URL directly in a browser also shows the page — click "Visit Site" once, or add the header. Plain `curl` is unaffected: its UA isn't a browser.)
+
 ## Garment object (shared shape)
 
 ```json
