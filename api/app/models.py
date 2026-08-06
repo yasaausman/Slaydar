@@ -57,6 +57,10 @@ class TransferOwnerRequest(BaseModel):
     new_owner_id: str
 
 
+class EvaluateStalenessRequest(BaseModel):
+    owner_id: str | None = None
+
+
 class ResolveLinkRequest(BaseModel):
     url: str
 

@@ -102,6 +102,35 @@ def checkin(garment_id: str, worn_date: date) -> Garment | None:
     return garment
 
 
+def evaluate_staleness(owner_id: str | None = None) -> list[Garment]:
+    """Staleness sweep — the trigger for never-worn Deprecation.
+
+    Check-in can flag *overworn* (it recomputes on every wear), but a never-worn
+    item never checks in, so nothing would ever flag it. This sweep fills that
+    gap: for catalogued-but-unworn items it applies the never-worn rule and
+    emits `Deprecation`. Items that have been worn keep their check-in-derived
+    status (we don't clear a rolling-window overworn flag from here). Skips
+    items already listed for resale — their record is frozen history.
+
+    Demoable as "run the staleness job", and re-runnable (only emits on change).
+    Returns the evaluated garments (whole closet, or one owner's).
+    """
+    garments = store.closet(owner_id) if owner_id else store.all_garments()
+    today = date.today()
+    for garment in garments:
+        if garment.status == GarmentStatus.listed_for_resale:
+            continue
+        if garment.wear_count != 0:
+            continue  # worn items' status is owned by check-in
+        status, deprecated, note = _staleness(garment.garment_id, 0, today)
+        if status != garment.status:
+            garment.status = status
+            store.put(garment)
+            dh.emit_properties(garment.garment_id, _props(garment))
+            dh.emit_deprecation(garment.garment_id, deprecated, note)
+    return garments
+
+
 def transfer_owner(garment_id: str, new_owner_id: str) -> Garment | None:
     """New ownership period => new dataset URN, linked to the old one by lineage.
 

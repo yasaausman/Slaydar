@@ -37,4 +37,4 @@ pytest                                 # tests/ run in FORCED dry-run — no liv
 ```
 `tests/conftest.py` sets `SLAYDAR_FORCE_DRY_RUN=true` before importing the app, so the suite is hermetic and never pollutes the shared instance. For a live end-to-end check against a running DataHub, use `python -m scripts.smoke_test` instead (that one *does* emit).
 
-**Known gap (Day 3):** never-worn `Deprecation` logic exists and is unit-tested (`_staleness`), but nothing calls it for a 0-wear item — staleness is only recomputed on check-in, and a never-worn item never checks in. Day 3 adds the trigger (a staleness sweep endpoint, or lazy evaluation on `/closet`).
+**Deprecation triggers:** overworn is set on check-in (`service.checkin`); never-worn is set by the staleness sweep (`service.evaluate_staleness`, exposed as `POST /garments/evaluate-staleness`) — needed because a 0-wear item never checks in. Both use the same `_staleness` rules.

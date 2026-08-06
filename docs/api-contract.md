@@ -36,13 +36,19 @@ https://novelty-friends-dash-opposite.trycloudflare.com
 
 | Method | Path | Body | Returns | Notes |
 |---|---|---|---|---|
-| POST | `/garments` | vision-extracted fields (category/color/material/brand/style_tags) + owner_id | garment object | creates Dataset entity + Ownership + GlossaryTerms |
+| POST | `/garments` | vision-extracted fields (category/color/material/brand/style_tags) + owner_id; optional `cost` (number, for cost_per_wear) and `cataloged_date` (ISO date, backdate to demo never-worn) | garment object | creates Dataset entity + Ownership + GlossaryTerms |
 | GET | `/closet/{owner_id}` | — | `[garment object]` | list for closet view |
 | GET | `/garments/{id}` | — | garment object | |
-| POST | `/garments/{id}/checkin` | `{ "worn_date": "ISO date" }` | updated garment object | increments wear_count, updates last_worn_date, recomputes cost_per_wear, sets `Deprecation` flag if overworn/unworn |
+| POST | `/garments/{id}/checkin` | `{ "worn_date": "ISO date" }` | updated garment object | increments wear_count, updates last_worn_date, recomputes cost_per_wear, sets **overworn** `Deprecation` flag |
+| POST | `/garments/evaluate-staleness` | `{ "owner_id"?: "string" }` (or empty `{}`) | `[garment object]` (evaluated set) | **staleness sweep** — flags **never-worn** items (`Deprecation` + status `flagged-unworn`). Omit body / owner_id to sweep everything; pass `owner_id` to scope to one closet. Idempotent, re-runnable. See "never-worn trigger" below. |
 | POST | `/garments/{id}/transfer-owner` | `{ "new_owner_id": "string" }` | garment object (new garment_id) | creates new dataset URN for the new ownership period, links via `UpstreamLineage` to the previous one |
 | GET | `/garments/{id}/lineage` | — | ownership-chain summary (list of past garment_ids/owners) | powers the demo's lineage moment |
 | POST | `/garments/resolve-link` | `{ "url": "string" }` | garment object (unsaved, for confirm-before-create) | Tier 2 — schema.org Product parsing. **Currently a 501 stub in `/api`, not called by `/web`** — see note below. |
+
+### Deprecation flags: overworn vs never-worn (for Person B)
+Two staleness signals, set by two different triggers — both surface as `status` on the garment object:
+- **`flagged-overworn`** — set automatically on **check-in** (≥4 wears in 7 days). Nothing extra to call; it just appears after enough check-ins.
+- **`flagged-unworn`** — set by the **staleness sweep** (`POST /garments/evaluate-staleness`), because a never-worn item never checks in and so can't self-flag. Call it to refresh flags before rendering the closet, or wire a "run staleness check" demo button. To *demo* never-worn without waiting 30 real days, create the garment with a backdated `cataloged_date` (30+ days ago), then run the sweep.
 
 ## Runtime Claude calls (live in `/web`, not `/api`)
 - Vision extraction: photo(s) → structured fields matching the "vision-extracted fields" above, then `POST /garments`.

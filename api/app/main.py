@@ -15,6 +15,7 @@ from .config import settings
 from .models import (
     CheckinRequest,
     CreateGarmentRequest,
+    EvaluateStalenessRequest,
     Garment,
     LineageResponse,
     ResolveLinkRequest,
@@ -60,6 +61,14 @@ def create_garment(req: CreateGarmentRequest) -> Garment:
 @app.get("/closet/{owner_id}", response_model=list[Garment])
 def closet(owner_id: str) -> list[Garment]:
     return store.closet(owner_id)
+
+
+@app.post("/garments/evaluate-staleness", response_model=list[Garment])
+def evaluate_staleness(req: EvaluateStalenessRequest | None = None) -> list[Garment]:
+    """Staleness sweep — trigger for never-worn Deprecation. Body optional:
+    `{}` sweeps all garments, `{"owner_id": "..."}` scopes to one closet."""
+    owner_id = req.owner_id if req else None
+    return service.evaluate_staleness(owner_id)
 
 
 @app.get("/garments/{garment_id}", response_model=Garment)

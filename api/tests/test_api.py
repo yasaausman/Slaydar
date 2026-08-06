@@ -105,3 +105,40 @@ def test_closet_lists_only_owner_items(client):
 
 def test_resolve_link_not_implemented(client):
     assert client.post("/garments/resolve-link", json={"url": "http://x"}).status_code == 501
+
+
+def test_staleness_sweep_flags_never_worn(client):
+    old = (date.today() - timedelta(days=40)).isoformat()
+    fresh = _create(client, category="coat", cataloged_date=old)["garment_id"]
+    recent = _create(client, category="scarf", cataloged_date=date.today().isoformat())["garment_id"]
+
+    swept = client.post("/garments/evaluate-staleness", json={}).json()
+    by_id = {g["garment_id"]: g for g in swept}
+    assert by_id[fresh]["status"] == "flagged-unworn"      # 40 days, 0 wears
+    assert by_id[recent]["status"] == "active"             # catalogued today
+
+
+def test_staleness_sweep_ignores_worn_items(client):
+    old = (date.today() - timedelta(days=40)).isoformat()
+    gid = _create(client, cataloged_date=old)["garment_id"]
+    client.post(f"/garments/{gid}/checkin", json={"worn_date": date.today().isoformat()})
+    swept = {g["garment_id"]: g for g in client.post("/garments/evaluate-staleness", json={}).json()}
+    # Worn once -> not never-worn; sweep must not touch it.
+    assert swept[gid]["status"] == "active"
+
+
+def test_staleness_sweep_scoped_to_owner(client):
+    old = (date.today() - timedelta(days=40)).isoformat()
+    _create(client, owner_id="ishani", cataloged_date=old)
+    _create(client, owner_id="alex", cataloged_date=old)
+    swept = client.post("/garments/evaluate-staleness", json={"owner_id": "ishani"}).json()
+    assert all(g["owner_id"] == "ishani" for g in swept)
+    assert len(swept) == 1
+
+
+def test_staleness_sweep_empty_body_sweeps_all(client):
+    old = (date.today() - timedelta(days=40)).isoformat()
+    _create(client, cataloged_date=old)
+    r = client.post("/garments/evaluate-staleness")  # no body at all
+    assert r.status_code == 200
+    assert r.json()[0]["status"] == "flagged-unworn"
