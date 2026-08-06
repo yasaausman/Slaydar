@@ -59,17 +59,17 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
           type="button"
           onClick={handleTransfer}
           disabled={transfer.step === "transferring"}
-          className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+          className="rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-500/20 transition hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40"
         >
           {transfer.step === "transferring" ? "Listing…" : "List & transfer to demo buyer"}
         </button>
       )}
       {transfer.step === "error" && <p className="text-sm text-red-500">{transfer.message}</p>}
       {transfer.step === "done" && (
-        <p className="text-sm text-green-600">
+        <p className="rounded-xl bg-green-50 p-3 text-sm text-green-700 dark:bg-green-500/10 dark:text-green-400">
           Listed and transferred. The new owner is <strong>{transfer.newGarment.owner_id}</strong>, and this
           item&apos;s history now carries forward as DataHub lineage. View it from the buyer&apos;s side:{" "}
-          <Link href={`/listing/${transfer.newGarment.garment_id}`} className="underline">
+          <Link href={`/listing/${transfer.newGarment.garment_id}`} className="font-semibold underline">
             {transfer.newGarment.garment_id}
           </Link>
           .
@@ -81,15 +81,18 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
           type="button"
           onClick={handleViewLineage}
           disabled={lineage.step === "loading"}
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium disabled:opacity-40 dark:border-white/20"
+          className="rounded-full border-2 border-purple-200 bg-white px-5 py-2.5 text-sm font-bold text-purple-700 transition hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         >
           {lineage.step === "loading" ? "Loading…" : "View ownership history"}
         </button>
         {lineage.step === "error" && <p className="mt-2 text-sm text-red-500">{lineage.message}</p>}
         {lineage.step === "done" && (
-          <ol className="mt-3 space-y-1 text-sm">
+          <ol className="mt-3 space-y-1.5 text-sm">
             {lineage.chain.map((node, i) => (
-              <li key={node.urn} className="text-gray-600 dark:text-gray-300">
+              <li
+                key={node.urn}
+                className="rounded-lg bg-white/70 px-3 py-1.5 text-gray-700 dark:bg-white/5 dark:text-gray-300"
+              >
                 {i + 1}. owner <strong>{node.owner_id}</strong> (<code className="text-xs">{node.garment_id}</code>)
               </li>
             ))}

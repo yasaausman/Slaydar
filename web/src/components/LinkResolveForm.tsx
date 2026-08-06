@@ -5,6 +5,7 @@ import Link from "next/link";
 import { DEMO_OWNER_ID } from "@/lib/constants";
 import type { Garment } from "@/lib/mock-garments";
 import type { ExtractedGarment } from "@/lib/types";
+import GarmentChips from "@/components/GarmentChips";
 
 type Stage =
   | { step: "idle" }
@@ -73,9 +74,9 @@ export default function LinkResolveForm() {
   }
 
   return (
-    <div className="mt-10 border-t border-gray-200 pt-6 dark:border-white/10">
-      <h2 className="text-sm font-semibold">Or paste a product link</h2>
-      <p className="mt-1 text-xs text-gray-500">
+    <div className="mt-10 border-t border-purple-100 pt-6 dark:border-white/10">
+      <h2 className="text-sm font-bold text-purple-700 dark:text-purple-300">🔗 Or paste a product link</h2>
+      <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
         Skip the photo. Paste a retailer product page and Slaydar resolves it into a catalog entry.
       </p>
 
@@ -86,12 +87,12 @@ export default function LinkResolveForm() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://retailer.example.com/product/..."
-          className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+          className="flex-1 rounded-full border border-purple-200 bg-white px-4 py-2 text-sm dark:border-white/20 dark:bg-white/5"
         />
         <button
           type="submit"
           disabled={stage.step === "resolving" || !url}
-          className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+          className="rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
         >
           {stage.step === "resolving" ? "Resolving…" : "Resolve"}
         </button>
@@ -100,25 +101,23 @@ export default function LinkResolveForm() {
       {stage.step === "error" && <p className="mt-3 text-sm text-red-500">{stage.message}</p>}
 
       {(stage.step === "preview" || stage.step === "saving") && (
-        <div className="mt-4 rounded-lg border border-gray-200 p-4 dark:border-white/10">
-          <p className="text-xs text-gray-400">Resolved to:</p>
-          <pre className="mt-1 overflow-x-auto rounded bg-gray-100 p-2 text-xs dark:bg-white/10">
-            {JSON.stringify(stage.data, null, 2)}
-          </pre>
+        <div className="mt-4 rounded-xl bg-white/70 p-4 shadow-sm dark:bg-white/5">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Resolved to</p>
+          <GarmentChips data={stage.data} />
           <button
             type="button"
             onClick={() => handleSave(stage.data)}
             disabled={stage.step === "saving"}
-            className="mt-3 rounded-md bg-black px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40"
+            className="mt-3 rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm disabled:opacity-40"
           >
             {stage.step === "saving" ? "Saving…" : "Save to closet"}
           </button>
 
           {crossMatch?.status === "checking" && (
-            <p className="mt-3 text-xs text-gray-400">Checking if anyone else has this…</p>
+            <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Checking if anyone else has this…</p>
           )}
           {crossMatch?.status === "found" && (
-            <div className="mt-3 rounded-md border border-fuchsia-300 bg-fuchsia-50 p-3 text-xs dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
+            <div className="mt-3 rounded-lg border border-fuchsia-300 bg-fuchsia-50 p-3 text-xs dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
               <p className="font-semibold text-fuchsia-700 dark:text-fuchsia-300">
                 🔎 Someone else has this exact item
               </p>
@@ -140,7 +139,7 @@ export default function LinkResolveForm() {
       )}
 
       {stage.step === "saved" && (
-        <p className="mt-3 text-sm font-medium text-green-600">Saved to closet ({stage.garmentId})</p>
+        <p className="mt-3 text-sm font-bold text-green-600">Saved to closet ({stage.garmentId})</p>
       )}
     </div>
   );

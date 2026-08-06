@@ -6,6 +6,7 @@ import { DEMO_OWNER_ID } from "@/lib/constants";
 import type { Garment } from "@/lib/mock-garments";
 import type { ExtractedGarment } from "@/lib/types";
 import LinkResolveForm from "@/components/LinkResolveForm";
+import GarmentChips from "@/components/GarmentChips";
 
 type SelectedPhoto = {
   file: File;
@@ -113,15 +114,19 @@ export default function UploadPage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl p-8">
-      <h1 className="text-2xl font-bold">Upload your closet</h1>
-      <p className="mt-1 text-sm text-gray-500">
+    <main className="mx-auto max-w-2xl px-6 py-12">
+      <p className="text-xs font-bold tracking-[0.2em] text-fuchsia-600 uppercase dark:text-fuchsia-400">
+        Step one
+      </p>
+      <h1 className="mt-1 text-3xl font-extrabold sm:text-4xl">Upload your closet</h1>
+      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
         Add a few photos of your clothes and Slaydar will tag each one.
       </p>
 
-      <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 text-center hover:border-gray-400">
-        <span className="text-sm font-medium">Click to choose photos</span>
-        <span className="mt-1 text-xs text-gray-400">or drag and drop</span>
+      <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-fuchsia-300 bg-fuchsia-50/50 p-10 text-center transition hover:border-fuchsia-400 hover:bg-fuchsia-50 dark:border-fuchsia-500/30 dark:bg-fuchsia-500/5 dark:hover:bg-fuchsia-500/10">
+        <span className="text-3xl">📸</span>
+        <span className="mt-2 text-sm font-semibold">Click to choose photos</span>
+        <span className="mt-1 text-xs text-gray-500 dark:text-gray-400">or drag and drop</span>
         <input
           type="file"
           accept="image/*"
@@ -136,13 +141,13 @@ export default function UploadPage() {
           {photos.map((photo, index) => {
             const result = results[photo.previewUrl];
             return (
-              <div key={photo.previewUrl}>
+              <div key={photo.previewUrl} className="rounded-xl bg-white/60 p-2 shadow-sm dark:bg-white/5">
                 <div className="group relative aspect-square">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo.previewUrl}
                     alt={photo.file.name}
-                    className="h-full w-full rounded-md object-cover"
+                    className="h-full w-full rounded-lg object-cover"
                   />
                   <button
                     type="button"
@@ -154,27 +159,23 @@ export default function UploadPage() {
                   </button>
                 </div>
                 {result?.status === "pending" && (
-                  <p className="mt-2 text-xs text-gray-400">Tagging…</p>
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Tagging…</p>
                 )}
                 {result?.status === "saving" && (
-                  <p className="mt-2 text-xs text-gray-400">Saving to closet…</p>
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Saving to closet…</p>
                 )}
                 {result?.status === "error" && (
                   <p className="mt-2 text-xs text-red-500">{result.message}</p>
                 )}
                 {result?.status === "saved" && (
                   <>
-                    <p className="mt-2 text-xs font-medium text-green-600">
-                      Saved to closet ({result.garmentId})
-                    </p>
-                    <pre className="mt-1 overflow-x-auto rounded bg-gray-100 p-2 text-xs dark:bg-white/10">
-                      {JSON.stringify(result.data, null, 2)}
-                    </pre>
+                    <p className="mt-2 text-xs font-bold text-green-600">Saved ✓</p>
+                    <GarmentChips data={result.data} />
                     {crossMatches[photo.previewUrl]?.status === "checking" && (
-                      <p className="mt-1 text-xs text-gray-400">Checking if anyone else has this…</p>
+                      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Checking if anyone else has this…</p>
                     )}
                     {crossMatches[photo.previewUrl]?.status === "found" && (
-                      <div className="mt-1 rounded-md border border-fuchsia-300 bg-fuchsia-50 p-2 text-xs dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
+                      <div className="mt-2 rounded-lg border border-fuchsia-300 bg-fuchsia-50 p-2 text-xs dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
                         {(() => {
                           const cm = crossMatches[photo.previewUrl];
                           if (cm.status !== "found") return null;
@@ -206,7 +207,7 @@ export default function UploadPage() {
         type="button"
         onClick={handleExtract}
         disabled={photos.length === 0 || isExtracting}
-        className="mt-6 rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-6 rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-500/20 transition hover:shadow-lg hover:shadow-purple-500/30 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {isExtracting ? "Extracting…" : `Extract ${photos.length || ""} item${photos.length === 1 ? "" : "s"}`}
       </button>
