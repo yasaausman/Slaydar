@@ -6,8 +6,15 @@ async function forward(path: string, init?: RequestInit) {
   if (!API_BASE_URL) {
     return NextResponse.json({ error: "API_BASE_URL is not configured" }, { status: 500 });
   }
-  const res = await fetch(`${API_BASE_URL}${path}`, init);
-  const data = await res.json();
+
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE_URL}${path}`, init);
+  } catch {
+    return NextResponse.json({ error: "Backend is unreachable — is the API tunnel up?" }, { status: 502 });
+  }
+
+  const data = await res.json().catch(() => ({ error: `Backend returned a non-JSON ${res.status} response` }));
   return NextResponse.json(data, { status: res.status });
 }
 
