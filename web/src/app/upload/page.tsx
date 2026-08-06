@@ -7,9 +7,23 @@ type SelectedPhoto = {
   previewUrl: string;
 };
 
+type ExtractedGarment = {
+  category: string;
+  color: string;
+  material: string;
+  brand: string | null;
+  style_tags: string[];
+};
+
+type ExtractionResult =
+  | { status: "pending" }
+  | { status: "done"; data: ExtractedGarment }
+  | { status: "error"; message: string };
+
 export default function UploadPage() {
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
   const [isExtracting, setIsExtracting] = useState(false);
+  const [results, setResults] = useState<Record<string, ExtractionResult>>({});
 
   function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -30,8 +44,36 @@ export default function UploadPage() {
 
   async function handleExtract() {
     setIsExtracting(true);
-    // TODO (Step 4): send each photo to /api/extract for vision tagging.
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    setResults((prev) => {
+      const next = { ...prev };
+      for (const photo of photos) next[photo.previewUrl] = { status: "pending" };
+      return next;
+    });
+
+    await Promise.all(
+      photos.map(async (photo) => {
+        try {
+          const formData = new FormData();
+          formData.append("photo", photo.file);
+          const res = await fetch("/api/extract", { method: "POST", body: formData });
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(body.error ?? `Request failed with ${res.status}`);
+          }
+          const data: ExtractedGarment = await res.json();
+          setResults((prev) => ({ ...prev, [photo.previewUrl]: { status: "done", data } }));
+        } catch (err) {
+          setResults((prev) => ({
+            ...prev,
+            [photo.previewUrl]: {
+              status: "error",
+              message: err instanceof Error ? err.message : "Extraction failed",
+            },
+          }));
+        }
+      })
+    );
+
     setIsExtracting(false);
   }
 
@@ -55,25 +97,41 @@ export default function UploadPage() {
       </label>
 
       {photos.length > 0 && (
-        <div className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-4">
-          {photos.map((photo, index) => (
-            <div key={photo.previewUrl} className="group relative aspect-square">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.previewUrl}
-                alt={photo.file.name}
-                className="h-full w-full rounded-md object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => removePhoto(index)}
-                className="absolute top-1 right-1 rounded-full bg-black/60 px-1.5 text-xs text-white opacity-0 group-hover:opacity-100"
-                aria-label={`Remove ${photo.file.name}`}
-              >
-                ×
-              </button>
-            </div>
-          ))}
+        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {photos.map((photo, index) => {
+            const result = results[photo.previewUrl];
+            return (
+              <div key={photo.previewUrl}>
+                <div className="group relative aspect-square">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={photo.previewUrl}
+                    alt={photo.file.name}
+                    className="h-full w-full rounded-md object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(index)}
+                    className="absolute top-1 right-1 rounded-full bg-black/60 px-1.5 text-xs text-white opacity-0 group-hover:opacity-100"
+                    aria-label={`Remove ${photo.file.name}`}
+                  >
+                    ×
+                  </button>
+                </div>
+                {result?.status === "pending" && (
+                  <p className="mt-2 text-xs text-gray-400">Tagging…</p>
+                )}
+                {result?.status === "error" && (
+                  <p className="mt-2 text-xs text-red-500">{result.message}</p>
+                )}
+                {result?.status === "done" && (
+                  <pre className="mt-2 overflow-x-auto rounded bg-gray-100 p-2 text-xs dark:bg-white/10">
+                    {JSON.stringify(result.data, null, 2)}
+                  </pre>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
