@@ -21,7 +21,8 @@ def show(label, r):
 
 
 health = show("health", c.get("/health"))
-assert health["datahub_dry_run"] is True, "expected dry-run without a live DataHub"
+mode = "DRY-RUN" if health["datahub_dry_run"] else "LIVE (emitting to DataHub)"
+print(f"   >> DataHub mode: {mode}")
 
 g = show("create garment", c.post("/garments", json={
     "owner_id": "ishani",

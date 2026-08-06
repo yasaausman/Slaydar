@@ -3,9 +3,13 @@
 Status: **draft, lock on Day 0 (Aug 4).** Owned by Person A; update here whenever the aspect mapping changes.
 
 ## Shared instance
-- Host/URL: **TBD — fill in once stood up on Day 0.**
+- Host/URL: **running locally on Person A's machine** via `datahub docker quickstart` (DataHub **v1.7.0**). UI: http://localhost:9002 (`datahub`/`datahub`), GMS: http://localhost:8080.
+  - ⚠️ `localhost` is only reachable from Person A's machine. Before the integrated demo, expose it (ngrok/Tailscale) or move to a shared VM so Person B can point at it too. Until then Person B integrates against the API in dry-run.
+  - Restart after a reboot with `datahub docker quickstart` (images are cached — comes up in <1 min).
 - GMS: `:8080`, UI: `:9002` (defaults for `datahub docker quickstart`)
 - Platform URN used for all garments: `urn:li:dataPlatform:slaydar`
+- Requires Python **3.10–3.12** for the SDK/CLI (not 3.13+); local venv uses 3.12.
+- **Verified end-to-end (Day 1):** create → checkin → transfer-owner emits real MCPs; `Ownership`, `DatasetProperties`, `GlossaryTerms`, `Deprecation`, and `UpstreamLineage` all confirmed present in GMS. Lineage graph renders in the UI.
 
 ## Entity choice
 Garments are modeled as DataHub **Dataset** entities (no custom entity type — out of scope for a 6-day build). URN shape:
