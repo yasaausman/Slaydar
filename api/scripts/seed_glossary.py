@@ -1,42 +1,22 @@
 """One-time seed: create the Slaydar glossary node + style terms.
 
 Run this once against the shared DataHub before Day 1 so `GlossaryTerms` aspect
-writes from datahub_client don't reference missing term URNs.
+writes from datahub_client don't reference missing term URNs. (datahub_client
+also auto-ensures unknown terms at write time, so this is really just to
+pre-populate the canonical starter vocabulary and the node itself.)
 
     cd api && source .venv/bin/activate
     python -m scripts.seed_glossary
 
-Term URNs match datahub_client._term_urn(): urn:li:glossaryTerm:slaydar.<slug>
+Vocabulary + URN scheme come from app.glossary — the single source of truth.
 In dry-run mode (no live DataHub / SDK), it prints what it would create.
 """
 from __future__ import annotations
 
 import sys
 
+from app import glossary
 from app.config import settings
-
-# The starter style vocabulary. Keep small — it just has to exist so writes land.
-STYLE_TERMS = [
-    "casual",
-    "formal",
-    "streetwear",
-    "athleisure",
-    "business",
-    "loungewear",
-    "outerwear",
-    "evening",
-]
-
-NODE_ID = "slaydar"
-NODE_NAME = "Slaydar Style Tags"
-
-
-def _term_urn(slug: str) -> str:
-    return f"urn:li:glossaryTerm:{NODE_ID}.{slug}"
-
-
-def _node_urn() -> str:
-    return f"urn:li:glossaryNode:{NODE_ID}"
 
 
 def main() -> int:
@@ -49,9 +29,9 @@ def main() -> int:
         )
     except Exception as exc:
         print(f"[dry-run] SDK unavailable ({exc}). Would create:")
-        print(f"  node  {_node_urn()}  ('{NODE_NAME}')")
-        for t in STYLE_TERMS:
-            print(f"  term  {_term_urn(t)}")
+        print(f"  node  {glossary.node_urn()}  ('{glossary.NODE_NAME}')")
+        for t in glossary.STYLE_TERMS:
+            print(f"  term  {glossary.term_urn(t)}")
         return 0
 
     emitter = DatahubRestEmitter(gms_server=settings.datahub_gms_url, token=settings.datahub_token)
@@ -63,23 +43,23 @@ def main() -> int:
 
     # Glossary node.
     emitter.emit(MetadataChangeProposalWrapper(
-        entityUrn=_node_urn(),
-        aspect=GlossaryNodeInfoClass(definition="Slaydar wardrobe style tags", name=NODE_NAME),
+        entityUrn=glossary.node_urn(),
+        aspect=GlossaryNodeInfoClass(definition="Slaydar wardrobe style tags", name=glossary.NODE_NAME),
     ))
     # Terms under it.
-    for slug in STYLE_TERMS:
+    for tag in glossary.STYLE_TERMS:
         emitter.emit(MetadataChangeProposalWrapper(
-            entityUrn=_term_urn(slug),
+            entityUrn=glossary.term_urn(tag),
             aspect=GlossaryTermInfoClass(
-                definition=f"Style tag: {slug}",
-                name=slug,
+                definition=f"Style tag: {tag}",
+                name=tag,
                 termSource="INTERNAL",
-                parentNode=_node_urn(),
+                parentNode=glossary.node_urn(),
             ),
         ))
-        print(f"seeded {_term_urn(slug)}")
+        print(f"seeded {glossary.term_urn(tag)}")
 
-    print(f"\nSeeded glossary node + {len(STYLE_TERMS)} terms to {settings.datahub_gms_url} ✅")
+    print(f"\nSeeded glossary node + {len(glossary.STYLE_TERMS)} terms to {settings.datahub_gms_url} ✅")
     return 0
 
 

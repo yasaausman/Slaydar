@@ -15,6 +15,7 @@ from __future__ import annotations
 import logging
 from datetime import date, datetime, timezone
 
+from . import glossary
 from .config import settings
 
 log = logging.getLogger("slaydar.datahub")
@@ -29,6 +30,7 @@ try:
         DatasetPropertiesClass,
         DeprecationClass,
         GlossaryTermAssociationClass,
+        GlossaryTermInfoClass,
         GlossaryTermsClass,
         OwnerClass,
         OwnershipClass,
@@ -47,7 +49,7 @@ except Exception as exc:  # pragma: no cover - import guard
 # Emitter (lazy, cached). Falls back to dry-run if DataHub can't be reached.
 # --------------------------------------------------------------------------- #
 _emitter = None
-_dry_run = not _SDK_AVAILABLE
+_dry_run = (not _SDK_AVAILABLE) or settings.force_dry_run
 
 
 def _get_emitter():
@@ -101,12 +103,6 @@ def _user_urn(owner_id: str) -> str:
     return f"urn:li:corpuser:{owner_id}"
 
 
-def _term_urn(tag: str) -> str:
-    # Glossary term URNs are seeded by scripts/seed_glossary.py under this node.
-    slug = tag.strip().lower().replace(" ", "_")
-    return f"urn:li:glossaryTerm:slaydar.{slug}"
-
-
 def _now_stamp():
     millis = int(datetime.now(timezone.utc).timestamp() * 1000)
     if _SDK_AVAILABLE:
@@ -150,18 +146,42 @@ def emit_ownership(garment_id: str, owner_id: str) -> None:
     _emit(mcp)
 
 
+def ensure_terms(style_tags: list[str]) -> None:
+    """Upsert a GlossaryTermInfo for each tag so associations never dangle.
+
+    The seed script covers the starter vocabulary, but the vision agent can emit
+    tags outside it (e.g. "y2k", "cottagecore"). Creating the term on demand —
+    idempotent in DataHub — keeps GlossaryTerms writes valid for anything Gemini
+    returns, and the glossary grows with real usage.
+    """
+    if _dry_run or not _SDK_AVAILABLE:
+        return
+    for tag in style_tags:
+        slug = glossary.slugify(tag)
+        _emit(MetadataChangeProposalWrapper(
+            entityUrn=glossary.term_urn(tag),
+            aspect=GlossaryTermInfoClass(
+                definition=f"Style tag: {slug}",
+                name=slug,
+                termSource="INTERNAL",
+                parentNode=glossary.node_urn(),
+            ),
+        ))
+
+
 def emit_glossary_terms(garment_id: str, style_tags: list[str]) -> None:
-    """GlossaryTerms — style tags. Terms must be seeded first (seed_glossary.py)."""
+    """GlossaryTerms — style tags. Auto-ensures each term exists first."""
     if not style_tags:
         return
     urn = garment_urn(garment_id)
     if _dry_run or not _SDK_AVAILABLE:
-        _emit(_FakeMcp(urn, "GlossaryTerms", {"terms": style_tags}))
+        _emit(_FakeMcp(urn, "GlossaryTerms", {"terms": [glossary.slugify(t) for t in style_tags]}))
         return
+    ensure_terms(style_tags)
     mcp = MetadataChangeProposalWrapper(
         entityUrn=urn,
         aspect=GlossaryTermsClass(
-            terms=[GlossaryTermAssociationClass(urn=_term_urn(t)) for t in style_tags],
+            terms=[GlossaryTermAssociationClass(urn=glossary.term_urn(t)) for t in style_tags],
             auditStamp=_now_stamp(),
         ),
     )

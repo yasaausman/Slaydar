@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     datahub_gms_url: str = "http://localhost:8080"
     datahub_token: str | None = None
 
+    # Force dry-run regardless of DataHub reachability. Tests set this so they
+    # never emit to the live instance (hermetic + fast + no data pollution).
+    force_dry_run: bool = False
+
     # Platform URN all garments are emitted under.
     platform: str = "slaydar"
     env: str = "PROD"
