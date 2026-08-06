@@ -40,18 +40,17 @@ else
   curl -sf http://localhost:8000/health >/dev/null 2>&1 && echo "healthy" || { echo "FAILED — see $RUN_DIR/uvicorn.log"; exit 1; }
 fi
 
-say "cloudflared tunnel"
-URL_FILE="$RUN_DIR/tunnel_url.txt"
-if pgrep -f "cloudflared tunnel --url http://localhost:8000" >/dev/null 2>&1; then
-  echo "already running — reusing existing tunnel"
-  URL="$(cat "$URL_FILE" 2>/dev/null || true)"
+say "ngrok tunnel (stable reserved domain)"
+# Stable URL — same every restart (ngrok reserved domain). Override with NGROK_DOMAIN.
+NGROK_DOMAIN="${NGROK_DOMAIN:-unsterile-dipper-degrading.ngrok-free.dev}"
+URL="https://$NGROK_DOMAIN"
+if pgrep -f "ngrok http" >/dev/null 2>&1; then
+  echo "already running — $URL"
 else
-  : > "$RUN_DIR/cloudflared.log"
-  nohup cloudflared tunnel --url http://localhost:8000 > "$RUN_DIR/cloudflared.log" 2>&1 &
-  echo "started (pid $!) — waiting for URL..."
-  sleep 6
-  URL="$(grep -Eo 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' "$RUN_DIR/cloudflared.log" 2>/dev/null | head -1 || true)"
-  [[ -n "$URL" ]] && echo "$URL" > "$URL_FILE"
+  nohup ngrok http --url="$URL" 8000 > "$RUN_DIR/ngrok.log" 2>&1 &
+  echo "started (pid $!) — waiting for tunnel..."
+  for _ in $(seq 1 15); do curl -sf "$URL/health" >/dev/null 2>&1 && break; sleep 1; done
+  curl -sf "$URL/health" >/dev/null 2>&1 && echo "healthy — $URL" || echo "WARN: $URL not answering yet (see $RUN_DIR/ngrok.log)"
 fi
 
 if [[ "${1:-}" == "--seed" ]]; then
@@ -62,8 +61,4 @@ fi
 say "READY"
 echo "Local API:   http://localhost:8000  (docs: /docs)"
 echo "DataHub UI:  http://localhost:9002  (datahub/datahub)"
-if [[ -n "$URL" ]]; then
-  echo "Public API:  $URL   <-- give this to Person B (update docs/api-contract.md)"
-else
-  echo "Public API:  (URL not captured yet — check $RUN_DIR/cloudflared.log)"
-fi
+echo "Public API:  $URL   (stable — already in docs/api-contract.md, no repush needed)"

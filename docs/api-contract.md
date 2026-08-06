@@ -3,14 +3,15 @@
 Status: **draft, lock on Day 0 (Aug 4).** Whoever changes an endpoint updates this file in the same PR.
 
 ## Live API base URL (for Person B)
-Person A's FastAPI service is exposed to Person B via a cloudflared tunnel (the app talks to `/api`, not to DataHub directly — only `/api` writes to DataHub):
+Person A's FastAPI service is exposed to Person B via a **stable ngrok reserved domain** (the app talks to `/api`, not to DataHub directly — only `/api` writes to DataHub):
 
 ```
-https://novelty-friends-dash-opposite.trycloudflare.com
+https://unsterile-dipper-degrading.ngrok-free.dev
 ```
 
+- **Stable** — this URL does *not* change across restarts/reboots (ngrok reserved domain). Set it once as `API_BASE_URL` in `/web/.env.local`.
 - Quick smoke: `GET /health` → `{"status":"ok",...,"datahub_dry_run":false}` means it's live against DataHub.
-- ⚠️ **Ephemeral URL** — a `trycloudflare.com` quick tunnel gets a *new* random URL every time it restarts (reboot, laptop sleep, or Person A stopping it). If it stops resolving, Person A re-runs the tunnel and updates this line. Set it as an env var in `/web` (e.g. `SLAYDAR_API_BASE`) so swapping it is a one-line change.
+- If it stops resolving, Person A just needs the tunnel running again: `cd api && ./scripts/demo_up.sh` (same URL comes back).
 - No auth on the API — fine for the hackathon, but don't post the URL publicly.
 
 ## Garment object (shared shape)

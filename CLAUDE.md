@@ -17,7 +17,7 @@ Catalogs a closet from photos, tracks real wear history, and turns that history 
 - Ownership history across resale = a new dataset URN per ownership period, linked by `UpstreamLineage` — chosen specifically so the DataHub lineage graph UI is demoable live.
 
 ## Shared DataHub instance
-Both of you point at one shared DataHub instance (not separate local ones) so demo data stays consistent. Currently running on Person A's machine (`datahub docker quickstart`, v1.7.0) — full access details in `docs/datahub-schema.md`. `/api` is exposed to Person B via an ephemeral cloudflared tunnel (URL in `docs/api-contract.md`) since only `/api` talks to DataHub directly; nail down something more permanent than the quick-tunnel before the actual demo.
+Both of you point at one shared DataHub instance (not separate local ones) so demo data stays consistent. Currently running on Person A's machine (`datahub docker quickstart`, v1.7.0) — full access details in `docs/datahub-schema.md`. `/api` is exposed to Person B via a **stable ngrok reserved domain** (URL in `docs/api-contract.md`) since only `/api` talks to DataHub directly; the URL is fixed across restarts, so no repush is needed when Person A's laptop reboots.
 
 ## Sync workflow (both people, every step)
 We work **directly on `main`** — no feature branches, no PRs. This keeps a 2-person hackathon in sync with the least ceremony. After completing each meaningful step (a working commit-sized chunk), run this loop so neither person drifts:

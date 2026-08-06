@@ -27,13 +27,13 @@ uvicorn app.main:app --reload --port 8000
 Point `SLAYDAR_DATAHUB_GMS_URL` at the shared instance (default `http://localhost:8080`). If DataHub is unreachable, the client runs in **dry-run mode** (logs the MCP it *would* emit) so the API still boots for frontend integration.
 
 ## Demo bring-up (one command)
-The API + tunnel die on reboot/sleep; DataHub containers persist but need a restart. To bring the whole stack up idempotently and print the current public tunnel URL:
+The API + tunnel die on reboot/sleep; DataHub containers persist but need a restart. To bring the whole stack up idempotently:
 ```bash
-cd api && ./scripts/demo_up.sh          # DataHub -> glossary -> API -> tunnel
+cd api && ./scripts/demo_up.sh          # DataHub -> glossary -> API -> ngrok tunnel
 cd api && ./scripts/demo_up.sh --seed   # ...and seed the demo closet
 cd api && ./scripts/demo_down.sh        # stop API + tunnel (--all also stops DataHub)
 ```
-The tunnel URL **changes every restart** — `demo_up.sh` prints the new one; paste it into `docs/api-contract.md` (top) and push so Person B picks it up. Logs live in `api/.run/` (git-ignored).
+The public URL is a **stable ngrok reserved domain** (`unsterile-dipper-degrading.ngrok-free.dev`) — same every restart, already in `docs/api-contract.md`, so **no repush needed** when the laptop reboots. Override the domain with `NGROK_DOMAIN=...`. ngrok authtoken lives in `~/Library/Application Support/ngrok/ngrok.yml` (outside the repo). Logs in `api/.run/` (git-ignored). And because the store now rehydrates from DataHub on startup, a restart doesn't even need a reseed.
 
 **Reset demo data:** `./scripts/demo_down.sh` then `datahub docker nuke && datahub docker quickstart`, then `./scripts/demo_up.sh --seed`. (The in-process store is ephemeral; a plain API restart already clears `/closet` — reseed after.)
 

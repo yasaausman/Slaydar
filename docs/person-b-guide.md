@@ -154,17 +154,17 @@ git push
 git pull --rebase
 ```
 
-✅ **The backend is already live and reachable from your machine** — Person A stood up DataHub v1.7.0 and exposed the FastAPI `/api` through a cloudflared tunnel. You don't need Person A's machine or a local backend; just point at the tunnel URL. Add it to `web/.env.local`:
+✅ **The backend is already live and reachable from your machine** — Person A stood up DataHub v1.7.0 and exposed the FastAPI `/api` through a **stable ngrok domain**. You don't need Person A's machine or a local backend; just point at the URL. Add it to `web/.env.local`:
 ```
-API_BASE_URL=https://novelty-friends-dash-opposite.trycloudflare.com
+API_BASE_URL=https://unsterile-dipper-degrading.ngrok-free.dev
 ```
 Sanity-check it works from your machine before wiring anything:
 ```bash
-curl https://novelty-friends-dash-opposite.trycloudflare.com/health
+curl https://unsterile-dipper-degrading.ngrok-free.dev/health
 ```
 You should get `{"status":"ok",...,"datahub_dry_run":false}` — `datahub_dry_run:false` means your calls write to the **real** DataHub, so anything you create shows up in the demo's DataHub UI.
 
-⚠️ **This URL is ephemeral** — it changes whenever Person A's tunnel restarts (their laptop sleeping/rebooting, etc.). The current one always lives at the top of [docs/api-contract.md](api-contract.md); if `curl /health` stops resolving, `git pull --rebase` for the latest URL or ping Person A to restart the tunnel. Because it's in one env var, swapping it is a one-line change.
+ℹ️ **This URL is stable** — it stays the same across Person A's restarts/reboots, so set it once. If `curl /health` ever fails to resolve, it just means Person A's laptop/tunnel is down at that moment — ping them to run `./scripts/demo_up.sh`; the same URL comes back.
 
 Update the upload flow: after extraction, `POST` the result to `${API_BASE_URL}/garments`. (If the tunnel is ever down mid-work, fall back to the Step 2 mock data and leave a `// TODO: swap for real API_BASE_URL call` comment — don't block on Person A. The backend also has a **dry-run mode** noted in `api/CLAUDE.md`, but right now it's fully live, not dry-run.)
 

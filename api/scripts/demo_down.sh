@@ -6,8 +6,8 @@ set -uo pipefail
 
 say() { printf "\n\033[1;36m==> %s\033[0m\n" "$1"; }
 
-say "Stopping cloudflared tunnel"
-pkill -f "cloudflared tunnel --url http://localhost:8000" && echo "stopped" || echo "not running"
+say "Stopping ngrok tunnel"
+pkill -f "ngrok http" && echo "stopped" || echo "not running"
 
 say "Stopping API (:8000)"
 lsof -ti tcp:8000 | xargs kill 2>/dev/null && echo "stopped" || echo "not running"
