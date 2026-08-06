@@ -30,11 +30,11 @@ export default async function ClosetPage() {
     <main className="mx-auto max-w-4xl p-8">
       <h1 className="text-2xl font-bold">Closet</h1>
       <p className="mt-1 text-sm text-gray-500">
-        {live ? "Live from DataHub via /api." : "Backend unreachable — showing mock data."}
+        {live ? "Live from DataHub via /api." : "Backend's unreachable right now, so this is mock data."}
       </p>
 
       {garments.length === 0 ? (
-        <p className="mt-6 text-sm text-gray-400">No garments yet — upload some photos first.</p>
+        <p className="mt-6 text-sm text-gray-400">Nothing here yet. Upload some photos first.</p>
       ) : (
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
           {garments.map((garment) => (

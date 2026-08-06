@@ -128,7 +128,7 @@ export default function CheckinPage() {
             <div>
               <p className="text-sm text-gray-500">
                 {stage.closet.length === 0
-                  ? "Your closet is empty — upload some garments first."
+                  ? "Your closet is empty. Upload some garments first."
                   : "Pick the item you're actually wearing:"}
               </p>
               <div className="mt-3 flex flex-col gap-2">

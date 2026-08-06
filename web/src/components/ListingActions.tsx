@@ -67,8 +67,8 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
       {transfer.step === "error" && <p className="text-sm text-red-500">{transfer.message}</p>}
       {transfer.step === "done" && (
         <p className="text-sm text-green-600">
-          Listed and transferred — new owner <strong>{transfer.newGarment.owner_id}</strong>. This item&apos;s
-          history now carries forward as DataHub lineage — view it from the buyer&apos;s side:{" "}
+          Listed and transferred. The new owner is <strong>{transfer.newGarment.owner_id}</strong>, and this
+          item&apos;s history now carries forward as DataHub lineage. View it from the buyer&apos;s side:{" "}
           <Link href={`/listing/${transfer.newGarment.garment_id}`} className="underline">
             {transfer.newGarment.garment_id}
           </Link>
@@ -90,7 +90,7 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
           <ol className="mt-3 space-y-1 text-sm">
             {lineage.chain.map((node, i) => (
               <li key={node.urn} className="text-gray-600 dark:text-gray-300">
-                {i + 1}. owner <strong>{node.owner_id}</strong> — <code className="text-xs">{node.garment_id}</code>
+                {i + 1}. owner <strong>{node.owner_id}</strong> (<code className="text-xs">{node.garment_id}</code>)
               </li>
             ))}
           </ol>

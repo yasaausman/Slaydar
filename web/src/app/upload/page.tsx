@@ -116,7 +116,7 @@ export default function UploadPage() {
     <main className="mx-auto max-w-2xl p-8">
       <h1 className="text-2xl font-bold">Upload your closet</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Add a few photos of your clothes — Slaydar will tag each one.
+        Add a few photos of your clothes and Slaydar will tag each one.
       </p>
 
       <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 text-center hover:border-gray-400">

@@ -76,7 +76,7 @@ export default function LinkResolveForm() {
     <div className="mt-10 border-t border-gray-200 pt-6 dark:border-white/10">
       <h2 className="text-sm font-semibold">Or paste a product link</h2>
       <p className="mt-1 text-xs text-gray-500">
-        Skip the photo — resolve a retailer product page straight into a catalog entry.
+        Skip the photo. Paste a retailer product page and Slaydar resolves it into a catalog entry.
       </p>
 
       <form onSubmit={handleResolve} className="mt-3 flex gap-2">
@@ -125,7 +125,7 @@ export default function LinkResolveForm() {
               <p className="mt-1 text-gray-600 dark:text-gray-300">
                 <strong>{crossMatch.garment.owner_id}</strong> owns a {crossMatch.garment.color}{" "}
                 {crossMatch.garment.category}
-                {crossMatch.garment.brand ? ` (${crossMatch.garment.brand})` : ""} — condition score{" "}
+                {crossMatch.garment.brand ? ` (${crossMatch.garment.brand})` : ""}, condition score{" "}
                 {crossMatch.garment.condition_score}.
               </p>
               <Link

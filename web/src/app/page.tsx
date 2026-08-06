@@ -24,9 +24,9 @@ function RadarMark() {
 }
 
 const FEATURES = [
-  { emoji: "📸", title: "Snap your closet", body: "Upload a few photos — Slaydar tags category, color, material, and brand automatically." },
-  { emoji: "🔥", title: "Get roasted (nicely)", body: "Check in daily. Every roast cites a real stat — never your body, always your closet's choices." },
-  { emoji: "📊", title: "Track real wear stats", body: "Wear count, cost-per-wear, and staleness — overworn and forgotten pieces flag themselves." },
+  { emoji: "📸", title: "Snap your closet", body: "Upload a few photos and Slaydar tags the category, color, material, and brand for you." },
+  { emoji: "🔥", title: "Get roasted (nicely)", body: "Check in daily. Every roast cites a real stat. Never your body, always your closet's choices." },
+  { emoji: "📊", title: "Track real wear stats", body: "Wear count, cost per wear, staleness. Overworn and forgotten pieces flag themselves." },
   { emoji: "💰", title: "Resell with proof", body: "List with a condition score verified from tracked history, not a one-time snapshot." },
 ];
 
@@ -37,13 +37,13 @@ export default function Home() {
         <RadarMark />
         <h1 className="mt-6 text-6xl font-extrabold tracking-tight drop-shadow-sm">Slaydar</h1>
         <p className="mt-3 text-sm font-semibold tracking-[0.2em] text-lime-300 uppercase">
-          it&apos;s scanning. it sees everything.
+          We know you better than you do you 😮‍💨
         </p>
 
         <p className="mt-6 max-w-xl text-lg text-white/90">
-          Catalog your closet from photos, get roasted (affectionately) about how you actually
-          wear your clothes, and turn your tracked wear history into a verified trust signal when
-          you resell — backed by real usage data, not a one-time snapshot.
+          Catalog your closet from photos, get roasted (affectionately) for how you actually wear
+          your clothes, and turn that wear history into a trust signal when you resell. All backed
+          by real usage data, not a one-time snapshot.
         </p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -89,7 +89,7 @@ export default function Home() {
         </div>
 
         <p className="mt-14 text-xs text-white/60">
-          Every garment is tracked as real, verifiable data — built on DataHub.
+          Every garment is tracked as real, verifiable data, built on DataHub.
         </p>
       </div>
     </main>

@@ -24,14 +24,14 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
     <main className="mx-auto max-w-xl p-8">
       <h1 className="text-2xl font-bold capitalize">
         {garment.color} {garment.category}
-        {garment.brand ? ` — ${garment.brand}` : ""}
+        {garment.brand ? `, ${garment.brand}` : ""}
       </h1>
 
       <div className="mt-6 rounded-lg border border-gray-200 p-6 text-center dark:border-white/10">
         <p className="text-xs tracking-wide text-gray-400 uppercase">Condition score</p>
         <p className="mt-1 text-5xl font-bold">{garment.condition_score}</p>
         <p className="mt-2 text-xs text-gray-500">
-          Verified from tracked wear history — not a one-time snapshot.
+          Verified from tracked wear history, not a one-time snapshot.
         </p>
       </div>
 
