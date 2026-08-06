@@ -1,18 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { DEMO_OWNER_ID } from "@/lib/constants";
+import type { ExtractedGarment } from "@/lib/types";
 
 type SelectedPhoto = {
   file: File;
   previewUrl: string;
-};
-
-type ExtractedGarment = {
-  category: string;
-  color: string;
-  material: string;
-  brand: string | null;
-  style_tags: string[];
 };
 
 type ExtractionResult =
@@ -20,9 +14,6 @@ type ExtractionResult =
   | { status: "saving"; data: ExtractedGarment }
   | { status: "saved"; data: ExtractedGarment; garmentId: string }
   | { status: "error"; message: string };
-
-// Hardcoded for the hackathon demo — no auth/login flow yet.
-const DEMO_OWNER_ID = "u-demo";
 
 export default function UploadPage() {
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);

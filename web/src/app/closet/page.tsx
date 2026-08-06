@@ -1,6 +1,5 @@
 import { mockGarments, type Garment } from "@/lib/mock-garments";
-
-const DEMO_OWNER_ID = "u-demo";
+import { DEMO_OWNER_ID } from "@/lib/constants";
 
 async function getCloset(): Promise<{ garments: Garment[]; live: boolean }> {
   const apiBaseUrl = process.env.API_BASE_URL;
