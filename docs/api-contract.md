@@ -42,9 +42,10 @@ https://novelty-friends-dash-opposite.trycloudflare.com
 | POST | `/garments/{id}/checkin` | `{ "worn_date": "ISO date" }` | updated garment object | increments wear_count, updates last_worn_date, recomputes cost_per_wear, sets `Deprecation` flag if overworn/unworn |
 | POST | `/garments/{id}/transfer-owner` | `{ "new_owner_id": "string" }` | garment object (new garment_id) | creates new dataset URN for the new ownership period, links via `UpstreamLineage` to the previous one |
 | GET | `/garments/{id}/lineage` | — | ownership-chain summary (list of past garment_ids/owners) | powers the demo's lineage moment |
-| POST | `/garments/resolve-link` | `{ "url": "string" }` | garment object (unsaved, for confirm-before-create) | Tier 2 — schema.org Product parsing |
+| POST | `/garments/resolve-link` | `{ "url": "string" }` | garment object (unsaved, for confirm-before-create) | Tier 2 — schema.org Product parsing. **Currently a 501 stub in `/api`, not called by `/web`** — see note below. |
 
 ## Runtime Claude calls (live in `/web`, not `/api`)
 - Vision extraction: photo(s) → structured fields matching the "vision-extracted fields" above, then `POST /garments`.
 - Check-in match: photo → best-guess `garment_id` from `/closet/{owner_id}`, user confirms, then `POST /garments/{id}/checkin`.
+- **Link resolution: implemented entirely in `/web` (`POST /api/resolve-link`, Next.js route), not `/api`.** Since `POST /garments/resolve-link` on the backend was still a 501 stub, `/web` fetches the pasted URL server-side itself, extracts title/meta/JSON-LD via regex, and normalizes it through Gemini with the same schema used for vision extraction — returning `ExtractedGarment` fields, then reusing the existing `POST /garments` save flow. If `/api` later implements the real endpoint, `/web`'s route can be swapped to call it instead; until then, no need to build it on the backend too.
 - Roast generation: pull current garment stats (from `/closet/{owner_id}` or `/garments/{id}`) and pass into the Slaydar system prompt (locked in `PLAN.md` §5) — never let the model invent a stat not present in the fetched data.

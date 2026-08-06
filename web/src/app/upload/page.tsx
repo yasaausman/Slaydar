@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { DEMO_OWNER_ID } from "@/lib/constants";
 import type { ExtractedGarment } from "@/lib/types";
+import LinkResolveForm from "@/components/LinkResolveForm";
 
 type SelectedPhoto = {
   file: File;
@@ -161,6 +162,8 @@ export default function UploadPage() {
       >
         {isExtracting ? "Extracting…" : `Extract ${photos.length || ""} item${photos.length === 1 ? "" : "s"}`}
       </button>
+
+      <LinkResolveForm />
     </main>
   );
 }
