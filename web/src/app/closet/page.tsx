@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { mockGarments, type Garment } from "@/lib/mock-garments";
 import { DEMO_OWNER_ID } from "@/lib/constants";
 
@@ -52,6 +53,14 @@ export default async function ClosetPage() {
                 Worn {garment.wear_count}x
                 {garment.last_worn_date ? ` · last ${garment.last_worn_date}` : ""}
               </p>
+              {(garment.status === "flagged-overworn" || garment.status === "flagged-unworn") && (
+                <Link
+                  href={`/listing/${garment.garment_id}`}
+                  className="mt-3 block rounded-md bg-black py-1.5 text-center text-xs font-medium text-white"
+                >
+                  List for resale
+                </Link>
+              )}
             </div>
           ))}
         </div>
