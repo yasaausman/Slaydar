@@ -34,3 +34,9 @@ def test_recently_catalogued_unworn_is_not_stale():
     status, deprecated, _ = service._staleness(g.garment_id, wear_count=0, today=date.today())
     assert status == GarmentStatus.active
     assert deprecated is False
+
+
+def test_rehydrate_is_noop_in_dry_run():
+    # In the hermetic test env DataHub is never contacted; rehydrate must be a
+    # clean no-op (0 restored), not an error.
+    assert service.rehydrate_from_datahub() == 0

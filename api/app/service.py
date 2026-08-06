@@ -122,6 +122,8 @@ def evaluate_staleness(owner_id: str | None = None) -> list[Garment]:
             continue
         if garment.wear_count != 0:
             continue  # worn items' status is owned by check-in
+        if store.cataloged_on(garment.garment_id) is None:
+            continue  # unknown catalog date -> can't evaluate; preserve current status
         status, deprecated, note = _staleness(garment.garment_id, 0, today)
         if status != garment.status:
             garment.status = status
@@ -129,6 +131,55 @@ def evaluate_staleness(owner_id: str | None = None) -> list[Garment]:
             dh.emit_properties(garment.garment_id, _props(garment))
             dh.emit_deprecation(garment.garment_id, deprecated, note)
     return garments
+
+
+def _parse_date(s: str | None) -> date | None:
+    return date.fromisoformat(s) if s else None
+
+
+def rehydrate_from_datahub() -> int:
+    """Rebuild the in-process store from DataHub so /closet survives an API
+    restart without reseeding. No-op in dry-run. Returns count restored.
+
+    Note: individual wear dates aren't persisted (only wear_count/last_worn),
+    so the overworn rolling-window resets on restart — but statuses are restored
+    verbatim from customProperties, and cataloged_date is persisted, so never-worn
+    sweeps stay correct.
+    """
+    if dh.is_dry_run():
+        return 0
+    count = 0
+    for urn in dh.list_garment_urns():
+        data = dh.read_garment(urn)
+        if data is None:
+            continue
+        cp = data["custom"]
+        wear_count = int(cp.get("wear_count") or 0)
+        cost_per_wear = float(cp["cost_per_wear"]) if cp.get("cost_per_wear") else None
+        garment = Garment(
+            garment_id=data["garment_id"],
+            owner_id=data["owner_id"],
+            category=cp.get("category", "unknown"),
+            color=cp.get("color", "unknown"),
+            material=cp.get("material", "unknown"),
+            brand=cp.get("brand") or None,
+            style_tags=data["style_tags"],
+            wear_count=wear_count,
+            last_worn_date=_parse_date(cp.get("last_worn_date")),
+            cost_per_wear=cost_per_wear,
+            condition_score=int(cp.get("condition_score") or settings.starting_condition),
+            status=GarmentStatus(cp.get("status", "active")),
+        )
+        # Reconstruct cost basis from cost_per_wear * wear_count (exact when worn).
+        cost = round(cost_per_wear * wear_count, 2) if (cost_per_wear and wear_count) else None
+        store.put(garment, cost=cost)
+        cataloged = _parse_date(cp.get("cataloged_date"))
+        if cataloged:
+            store.set_cataloged(garment.garment_id, cataloged)
+        if data["parent"]:
+            store.set_parent(garment.garment_id, data["parent"])
+        count += 1
+    return count
 
 
 def transfer_owner(garment_id: str, new_owner_id: str) -> Garment | None:
@@ -188,7 +239,13 @@ def lineage(garment_id: str) -> LineageResponse | None:
 
 
 def _props(g: Garment) -> dict[str, object]:
-    """The customProperties string map written to DataHub for a garment."""
+    """The customProperties string map written to DataHub for a garment.
+
+    Includes cataloged_date so the store can be fully rehydrated from DataHub
+    after an API restart (it's the one field never-worn evaluation needs and
+    that isn't otherwise recoverable).
+    """
+    cataloged = store.cataloged_on(g.garment_id)
     return {
         "category": g.category,
         "color": g.color,
@@ -199,4 +256,5 @@ def _props(g: Garment) -> dict[str, object]:
         "cost_per_wear": g.cost_per_wear,
         "condition_score": g.condition_score,
         "status": g.status.value,
+        "cataloged_date": cataloged.isoformat() if cataloged else None,
     }

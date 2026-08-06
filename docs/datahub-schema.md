@@ -24,7 +24,7 @@ urn:li:dataset:(urn:li:dataPlatform:slaydar,<garment_id>,PROD)
 |---|---|---|
 | owner_id | `Ownership` | set on create; reassigned on `transfer-owner` (new URN, see below) |
 | style_tags | `GlossaryTerms` | seed glossary terms once (casual/formal/streetwear/...) via a one-time seed script before Day 1 |
-| category, color, material, brand, wear_count, last_worn_date, cost_per_wear, condition_score | `DatasetProperties.customProperties` | string map, updated via MCP on create/checkin |
+| category, color, material, brand, wear_count, last_worn_date, cost_per_wear, condition_score, **cataloged_date**, status | `DatasetProperties.customProperties` | string map, updated via MCP on create/checkin. `cataloged_date` is persisted so the API can fully rehydrate its in-process store from DataHub on restart (keeps never-worn sweeps correct without reseeding). |
 | overworn / never-worn | `Deprecation` | set `deprecated=true` + note when staleness rule trips (define thresholds below) |
 | ownership history across resale | new dataset URN per ownership period + `UpstreamLineage` | `transfer-owner` creates a new URN, sets `UpstreamLineage.upstreams = [previous urn]` |
 | condition score as verified assertion | DataHub Assertions (stretch, Tier 2+) | fallback: keep as customProperties only if time-constrained |

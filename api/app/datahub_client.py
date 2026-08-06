@@ -88,6 +88,59 @@ def is_dry_run() -> bool:
 
 
 # --------------------------------------------------------------------------- #
+# Read side — used to rehydrate the in-process store after an API restart.
+# --------------------------------------------------------------------------- #
+_graph = None
+
+
+def _get_graph():
+    global _graph
+    if _graph is None:
+        from datahub.ingestion.graph.client import DataHubGraph, DataHubGraphConfig
+
+        _graph = DataHubGraph(DataHubGraphConfig(server=settings.datahub_gms_url, token=settings.datahub_token))
+    return _graph
+
+
+def list_garment_urns() -> list[str]:
+    """All Slaydar dataset URNs currently in DataHub (empty in dry-run)."""
+    if is_dry_run():
+        return []
+    graph = _get_graph()
+    return list(graph.get_urns_by_filter(platform=settings.platform, entity_types=["dataset"]))
+
+
+def read_garment(urn: str) -> dict | None:
+    """Reconstruct a garment's fields from its DataHub aspects.
+
+    Returns a dict of {props, owner_id, style_tags, cataloged_date, parent} or
+    None if the entity has no DatasetProperties (not one of ours / incomplete).
+    """
+    graph = _get_graph()
+    props = graph.get_aspect(urn, DatasetPropertiesClass)
+    if props is None:
+        return None
+    cp = props.customProperties or {}
+
+    own = graph.get_aspect(urn, OwnershipClass)
+    owner_id = own.owners[0].owner.split(":")[-1] if own and own.owners else "unknown"
+
+    terms = graph.get_aspect(urn, GlossaryTermsClass)
+    style_tags = [t.urn.split(".")[-1] for t in terms.terms] if terms and terms.terms else []
+
+    lin = graph.get_aspect(urn, UpstreamLineageClass)
+    parent = lin.upstreams[0].dataset.split(",")[1] if lin and lin.upstreams else None
+
+    return {
+        "garment_id": props.name or urn.split(",")[1],
+        "owner_id": owner_id,
+        "style_tags": style_tags,
+        "custom": cp,
+        "parent": parent,
+    }
+
+
+# --------------------------------------------------------------------------- #
 # URN helpers
 # --------------------------------------------------------------------------- #
 def garment_urn(garment_id: str) -> str:

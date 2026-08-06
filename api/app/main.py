@@ -6,12 +6,28 @@ derived-field logic.
 """
 from __future__ import annotations
 
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import datahub_client as dh
 from . import service, store
 from .config import settings
+
+log = logging.getLogger("uvicorn.error")  # shows up in the server's own output
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Rebuild /closet from DataHub so a restart doesn't lose the demo data.
+    try:
+        n = service.rehydrate_from_datahub()
+        log.info("rehydrated %d garments from DataHub", n)
+    except Exception as exc:  # never let rehydrate failure block boot
+        log.warning("rehydrate skipped (%s)", exc)
+    yield
 from .models import (
     CheckinRequest,
     CreateGarmentRequest,
@@ -22,7 +38,7 @@ from .models import (
     TransferOwnerRequest,
 )
 
-app = FastAPI(title="Slaydar API", version="0.1.0")
+app = FastAPI(title="Slaydar API", version="0.1.0", lifespan=lifespan)
 
 # Person B's Next.js dev server calls this directly.
 app.add_middleware(
