@@ -20,6 +20,11 @@ ngrok-skip-browser-warning: true
 ```
 (Opening the URL directly in a browser also shows the page — click "Visit Site" once, or add the header. Plain `curl` is unaffected: its UA isn't a browser.)
 
+**⚠️ Sandboxed agent shells may block the tunnel (TLS handshake rejected).** If a `curl`/fetch to the ngrok URL fails with a *TLS handshake rejection* (not a timeout, not an ngrok error page), that's your **environment blocking tunnel services at the network layer** (SNI-based egress filtering — common in sandboxed Claude Code / CI shells; `ngrok.com` itself still loads because only the tunnel edges `*.ngrok-free.dev` are blocked). This is **not** a dead tunnel — verify by hitting `/health` from a *non-sandboxed* shell (your real Terminal.app) or your browser, where it returns 200. Practical workarounds:
+- **Develop inside the sandbox against mock data** (`src/lib/mock-garments.ts`, already the fallback), and exercise the live API only from your real machine's browser/terminal.
+- **The demo is unaffected** — it runs from a real browser on a real machine, which reaches the tunnel fine.
+- If your *whole machine* (not just the agent) blocks tunnels, **co-locate for the demo** — both point at Person A's laptop, which already runs DataHub + the API.
+
 ## Garment object (shared shape)
 
 ```json
