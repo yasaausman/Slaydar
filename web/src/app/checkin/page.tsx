@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Garment } from "@/lib/mock-garments";
+import { isHeicFile } from "@/lib/is-heic";
 
 type Stage =
   | { step: "select" }
@@ -78,8 +79,18 @@ export default function CheckinPage() {
 
       <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-fuchsia-300 bg-fuchsia-50/50 p-10 text-center transition hover:border-fuchsia-400 hover:bg-fuchsia-50 dark:border-fuchsia-500/30 dark:bg-fuchsia-500/5 dark:hover:bg-fuchsia-500/10">
         {photo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={photo.previewUrl} alt="Selected check-in" className="h-40 rounded-lg object-cover" />
+          isHeicFile(photo.file) ? (
+            <div className="flex h-40 w-40 flex-col items-center justify-center gap-1 rounded-lg bg-fuchsia-100 p-2 text-center dark:bg-fuchsia-500/10">
+              <span className="text-2xl">🖼️</span>
+              <span className="line-clamp-2 text-[10px] break-all text-fuchsia-700 dark:text-fuchsia-300">
+                {photo.file.name}
+              </span>
+              <span className="text-[9px] text-gray-500 dark:text-gray-400">no preview, still works</span>
+            </div>
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photo.previewUrl} alt="Selected check-in" className="h-40 rounded-lg object-cover" />
+          )
         ) : (
           <>
             <span className="text-3xl">✨</span>

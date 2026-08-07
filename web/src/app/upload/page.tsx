@@ -7,6 +7,7 @@ import type { Garment } from "@/lib/mock-garments";
 import type { ExtractedGarment } from "@/lib/types";
 import LinkResolveForm from "@/components/LinkResolveForm";
 import GarmentChips from "@/components/GarmentChips";
+import { isHeicFile } from "@/lib/is-heic";
 
 type SelectedPhoto = {
   file: File;
@@ -143,12 +144,22 @@ export default function UploadPage() {
             return (
               <div key={photo.previewUrl} className="rounded-xl bg-white/60 p-2 shadow-sm dark:bg-white/5">
                 <div className="group relative aspect-square">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={photo.previewUrl}
-                    alt={photo.file.name}
-                    className="h-full w-full rounded-lg object-cover"
-                  />
+                  {isHeicFile(photo.file) ? (
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-lg bg-fuchsia-100 p-2 text-center dark:bg-fuchsia-500/10">
+                      <span className="text-2xl">🖼️</span>
+                      <span className="line-clamp-2 text-[10px] break-all text-fuchsia-700 dark:text-fuchsia-300">
+                        {photo.file.name}
+                      </span>
+                      <span className="text-[9px] text-gray-500 dark:text-gray-400">no preview, still works</span>
+                    </div>
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={photo.previewUrl}
+                      alt={photo.file.name}
+                      className="h-full w-full rounded-lg object-cover"
+                    />
+                  )}
                   <button
                     type="button"
                     onClick={() => removePhoto(index)}
