@@ -18,7 +18,7 @@ type ExtractionResult =
   | { status: "pending" }
   | { status: "saving"; data: ExtractedGarment }
   | { status: "saved"; data: ExtractedGarment; garmentId: string }
-  | { status: "error"; message: string };
+  | { status: "error"; message: string; data?: ExtractedGarment };
 
 type CrossMatch = { status: "checking" } | { status: "found"; garment: Garment } | { status: "none" };
 
@@ -73,6 +73,7 @@ export default function UploadPage() {
 
     await Promise.all(
       photos.map(async (photo) => {
+        let extracted: ExtractedGarment | undefined;
         try {
           const formData = new FormData();
           formData.append("photo", photo.file);
@@ -82,7 +83,11 @@ export default function UploadPage() {
             throw new Error(body.error ?? `Request failed with ${res.status}`);
           }
           const data: ExtractedGarment = await res.json();
+          extracted = data;
           setResults((prev) => ({ ...prev, [photo.previewUrl]: { status: "saving", data } }));
+          // Independent of whether saving to *your* closet succeeds — it only reads other
+          // owners' closets, so fire it as soon as we have tags rather than waiting on save.
+          checkCrossUserMatch(photo.previewUrl, data);
 
           const saveRes = await fetch("/api/garments", {
             method: "POST",
@@ -98,13 +103,13 @@ export default function UploadPage() {
             ...prev,
             [photo.previewUrl]: { status: "saved", data, garmentId: saved.garment_id },
           }));
-          checkCrossUserMatch(photo.previewUrl, data);
         } catch (err) {
           setResults((prev) => ({
             ...prev,
             [photo.previewUrl]: {
               status: "error",
               message: err instanceof Error ? err.message : "Extraction failed",
+              data: extracted,
             },
           }));
         }
@@ -141,6 +146,8 @@ export default function UploadPage() {
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
           {photos.map((photo, index) => {
             const result = results[photo.previewUrl];
+            const extractedData =
+              result?.status === "saved" || result?.status === "error" ? result.data : undefined;
             return (
               <div key={photo.previewUrl} className="rounded-xl bg-white/60 p-2 shadow-sm dark:bg-white/5">
                 <div className="group relative aspect-square">
@@ -179,9 +186,11 @@ export default function UploadPage() {
                   <p className="mt-2 text-xs text-red-500">{result.message}</p>
                 )}
                 {result?.status === "saved" && (
+                  <p className="mt-2 text-xs font-bold text-green-600">Saved ✓</p>
+                )}
+                {extractedData && (
                   <>
-                    <p className="mt-2 text-xs font-bold text-green-600">Saved ✓</p>
-                    <GarmentChips data={result.data} />
+                    <GarmentChips data={extractedData} />
                     {crossMatches[photo.previewUrl]?.status === "checking" && (
                       <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Checking if anyone else has this…</p>
                     )}
