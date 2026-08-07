@@ -2,19 +2,12 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 import { mockGarments, type Garment } from "@/lib/mock-garments";
 import { DEMO_OWNER_ID } from "@/lib/constants";
+import { fetchCloset } from "@/lib/backend";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 async function getCloset(): Promise<Garment[]> {
-  const apiBaseUrl = process.env.API_BASE_URL;
-  if (!apiBaseUrl) return mockGarments;
-  try {
-    const res = await fetch(`${apiBaseUrl}/closet/${DEMO_OWNER_ID}`, { cache: "no-store" });
-    if (!res.ok) return mockGarments;
-    return await res.json();
-  } catch {
-    return mockGarments;
-  }
+  return (await fetchCloset(DEMO_OWNER_ID)) ?? mockGarments;
 }
 
 export async function POST(req: NextRequest) {

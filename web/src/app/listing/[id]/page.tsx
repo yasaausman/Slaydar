@@ -1,18 +1,11 @@
 import { notFound } from "next/navigation";
 import { mockGarments, type Garment } from "@/lib/mock-garments";
 import ListingActions from "@/components/ListingActions";
+import { fetchGarment } from "@/lib/backend";
 
 async function getGarment(id: string): Promise<Garment | null> {
-  const apiBaseUrl = process.env.API_BASE_URL;
-  if (apiBaseUrl) {
-    try {
-      const res = await fetch(`${apiBaseUrl}/garments/${id}`, { cache: "no-store" });
-      if (res.ok) return await res.json();
-    } catch {
-      // fall through to mock lookup below
-    }
-  }
-  return mockGarments.find((g) => g.garment_id === id) ?? null;
+  const live = await fetchGarment(id);
+  return live ?? mockGarments.find((g) => g.garment_id === id) ?? null;
 }
 
 function scoreColor(score: number) {

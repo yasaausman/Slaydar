@@ -1,19 +1,11 @@
 import Link from "next/link";
 import { mockGarments, type Garment } from "@/lib/mock-garments";
 import { DEMO_OWNER_ID } from "@/lib/constants";
+import { fetchCloset } from "@/lib/backend";
 
 async function getCloset(): Promise<{ garments: Garment[]; live: boolean }> {
-  const apiBaseUrl = process.env.API_BASE_URL;
-  if (!apiBaseUrl) return { garments: mockGarments, live: false };
-
-  try {
-    const res = await fetch(`${apiBaseUrl}/closet/${DEMO_OWNER_ID}`, { cache: "no-store" });
-    if (!res.ok) return { garments: mockGarments, live: false };
-    const garments: Garment[] = await res.json();
-    return { garments, live: true };
-  } catch {
-    return { garments: mockGarments, live: false };
-  }
+  const garments = await fetchCloset(DEMO_OWNER_ID);
+  return garments ? { garments, live: true } : { garments: mockGarments, live: false };
 }
 
 const statusStyles: Record<Garment["status"], string> = {
