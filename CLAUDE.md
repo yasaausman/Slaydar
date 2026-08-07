@@ -35,3 +35,4 @@ Rules:
 - If a rebase conflict hits, resolve it in the two files most likely to collide: `docs/api-contract.md` and `docs/datahub-schema.md`. Whoever changes the contract updates the doc in the **same commit**.
 - Never leave `main` in a broken state overnight — the other person pulls it first thing.
 - Person A owns `/api` + `docs/datahub-schema.md`; Person B owns `/web`. Editing across that line is fine, but call it out in the commit message.
+- **No `Co-Authored-By: Claude` trailer on commits.** Just the human author.
