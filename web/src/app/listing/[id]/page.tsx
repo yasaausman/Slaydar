@@ -2,45 +2,11 @@ import { notFound } from "next/navigation";
 import { mockGarments, type Garment } from "@/lib/mock-garments";
 import ListingActions from "@/components/ListingActions";
 import { fetchGarment } from "@/lib/backend";
+import ConditionRing from "@/components/ConditionRing";
 
 async function getGarment(id: string): Promise<Garment | null> {
   const live = await fetchGarment(id);
   return live ?? mockGarments.find((g) => g.garment_id === id) ?? null;
-}
-
-function scoreColor(score: number) {
-  if (score >= 80) return { stroke: "#22c55e", text: "text-green-600" };
-  if (score >= 50) return { stroke: "#f59e0b", text: "text-amber-600" };
-  return { stroke: "#ef4444", text: "text-red-600" };
-}
-
-function ConditionRing({ score }: { score: number }) {
-  const radius = 52;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference * (1 - score / 100);
-  const { stroke, text } = scoreColor(score);
-
-  return (
-    <div className="relative mx-auto h-32 w-32">
-      <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
-        <circle cx="60" cy="60" r={radius} fill="none" strokeWidth="10" className="stroke-gray-200 dark:stroke-white/10" />
-        <circle
-          cx="60"
-          cy="60"
-          r={radius}
-          fill="none"
-          stroke={stroke}
-          strokeWidth="10"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className={`text-3xl font-extrabold ${text}`}>{score}</span>
-      </div>
-    </div>
-  );
 }
 
 export default async function ListingPage({ params }: { params: Promise<{ id: string }> }) {
@@ -49,46 +15,82 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
   if (!garment) notFound();
 
   return (
-    <main className="mx-auto max-w-xl px-6 py-12">
-      <p className="text-xs font-bold tracking-[0.2em] text-fuchsia-600 uppercase dark:text-fuchsia-400">
-        Resale listing
-      </p>
-      <h1 className="mt-1 text-3xl font-extrabold capitalize sm:text-4xl">
-        {garment.color} {garment.category}
-        {garment.brand ? `, ${garment.brand}` : ""}
-      </h1>
-
-      <div className="mt-6 rounded-2xl bg-white p-8 text-center shadow-xl dark:bg-white/10">
-        <p className="text-xs font-bold tracking-wide text-gray-400 uppercase">Condition score</p>
-        <div className="mt-4">
-          <ConditionRing score={garment.condition_score} />
+    <main className="mx-auto max-w-2xl px-6 py-12 text-white">
+      {/* Page Title Header */}
+      <div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-black uppercase tracking-widest text-[#d9ff3b]">
+            Verified Resale Listing
+          </span>
+          <span className="rounded-full bg-cyan-500/15 border border-cyan-500/30 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-cyan-300">
+            {garment.status}
+          </span>
         </div>
-        <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
-          Verified from tracked wear history, not a one-time snapshot.
+        <h1 className="mt-1 text-4xl font-black capitalize tracking-tight text-white sm:text-5xl">
+          {garment.color} {garment.category}
+          {garment.brand ? `, ${garment.brand}` : ""}
+        </h1>
+        <p className="mt-1.5 text-sm font-medium text-slate-300">
+          Owner: <code className="text-[#d9ff3b] font-bold">{garment.owner_id}</code> · ID: <code className="text-slate-400">{garment.garment_id}</code>
         </p>
       </div>
 
-      <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
-        <div className="rounded-xl bg-white/70 p-3 dark:bg-white/5">
-          <dt className="text-xs font-semibold text-gray-500 dark:text-gray-400">Wear count</dt>
-          <dd className="mt-0.5 font-bold">{garment.wear_count}</dd>
+      {/* Hero Condition Ring Card */}
+      <div className="mt-8 glass-panel relative overflow-hidden rounded-3xl p-8 text-center border border-white/10 shadow-2xl">
+        <div className="pointer-events-none absolute -top-12 -left-12 h-40 w-40 rounded-full bg-fuchsia-600/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-emerald-500/15 blur-3xl" />
+
+        <span className="text-xs font-extrabold uppercase tracking-widest text-slate-400">
+          Verified Condition Score
+        </span>
+
+        <div className="mt-5 flex justify-center">
+          <ConditionRing score={garment.condition_score} size={150} strokeWidth={12} />
         </div>
-        <div className="rounded-xl bg-white/70 p-3 dark:bg-white/5">
-          <dt className="text-xs font-semibold text-gray-500 dark:text-gray-400">Last worn</dt>
-          <dd className="mt-0.5 font-bold">{garment.last_worn_date ?? "never"}</dd>
+
+        <p className="mt-5 text-xs font-semibold text-slate-300 max-w-sm mx-auto">
+          Calculated from real, tamper-proof wear logs tracked on DataHub — not an unverified photo snapshot.
+        </p>
+      </div>
+
+      {/* Tracked Wear Metrics Grid */}
+      <dl className="mt-6 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+        <div className="glass-card rounded-2xl p-4 border border-white/10">
+          <dt className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+            Total Wears
+          </dt>
+          <dd className="mt-1 text-xl font-black text-white">{garment.wear_count}x</dd>
         </div>
-        <div className="rounded-xl bg-white/70 p-3 dark:bg-white/5">
-          <dt className="text-xs font-semibold text-gray-500 dark:text-gray-400">Cost per wear</dt>
-          <dd className="mt-0.5 font-bold">
-            {garment.cost_per_wear != null ? `$${garment.cost_per_wear.toFixed(2)}` : "unknown"}
+
+        <div className="glass-card rounded-2xl p-4 border border-white/10">
+          <dt className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+            Last Worn Date
+          </dt>
+          <dd className="mt-1 text-sm font-extrabold text-slate-200 truncate">
+            {garment.last_worn_date ?? "Never"}
           </dd>
         </div>
-        <div className="rounded-xl bg-white/70 p-3 dark:bg-white/5">
-          <dt className="text-xs font-semibold text-gray-500 dark:text-gray-400">Material</dt>
-          <dd className="mt-0.5 font-bold capitalize">{garment.material}</dd>
+
+        <div className="glass-card rounded-2xl p-4 border border-white/10">
+          <dt className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+            Cost Per Wear
+          </dt>
+          <dd className="mt-1 text-xl font-black text-[#d9ff3b]">
+            {garment.cost_per_wear != null ? `$${garment.cost_per_wear.toFixed(2)}` : "Unknown"}
+          </dd>
+        </div>
+
+        <div className="glass-card rounded-2xl p-4 border border-white/10">
+          <dt className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+            Material
+          </dt>
+          <dd className="mt-1 text-sm font-extrabold capitalize text-fuchsia-300 truncate">
+            {garment.material}
+          </dd>
         </div>
       </dl>
 
+      {/* Listing Actions & Lineage */}
       <ListingActions garmentId={garment.garment_id} />
     </main>
   );

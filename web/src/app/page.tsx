@@ -1,96 +1,126 @@
 import Link from "next/link";
+import SlaydarAgentCard from "@/components/SlaydarAgentCard";
 
-function RadarMark() {
+function SlaydarBadge() {
   return (
-    <div className="relative h-24 w-24">
-      <div className="absolute inset-0 rounded-full bg-white/10 blur-xl" />
-      <svg width="96" height="96" viewBox="0 0 96 96" fill="none" className="relative" aria-hidden="true">
-        <circle cx="48" cy="48" r="44" stroke="white" strokeOpacity="0.25" strokeWidth="2" />
-        <circle cx="48" cy="48" r="31" stroke="white" strokeOpacity="0.4" strokeWidth="2" />
-        <circle cx="48" cy="48" r="18" stroke="white" strokeOpacity="0.6" strokeWidth="2" />
-        <circle cx="70" cy="26" r="4" fill="#D9FF3B" />
-      </svg>
-      <div
-        className="absolute inset-0 animate-spin [animation-duration:3s]"
-        style={{
-          background:
-            "conic-gradient(from 0deg, rgba(217,255,59,0.5), transparent 25%, transparent 100%)",
-          borderRadius: "9999px",
-          maskImage: "radial-gradient(circle, transparent 0%, transparent 18%, black 19%, black 100%)",
-        }}
-      />
+    <div className="relative flex items-center justify-center">
+      <div className="absolute inset-0 rounded-full bg-fuchsia-600/30 blur-2xl" />
+      <div className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-tr from-fuchsia-500 via-purple-600 to-lime-300 p-[3px] shadow-[0_0_30px_rgba(217,255,59,0.3)]">
+        <div className="flex h-full w-full items-center justify-center rounded-[21px] bg-[#0d0714]">
+          <span className="text-4xl" role="img" aria-label="Fashion AI Icon">
+            👑
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
 
 const FEATURES = [
-  { emoji: "📸", title: "Snap your closet", body: "Upload a few photos and Slaydar tags the category, color, material, and brand for you." },
-  { emoji: "🔥", title: "Get roasted (nicely)", body: "Check in daily. Every roast cites a real stat. Never your body, always your closet's choices." },
-  { emoji: "📊", title: "Track real wear stats", body: "Wear count, cost per wear, staleness. Overworn and forgotten pieces flag themselves." },
-  { emoji: "💰", title: "Resell with proof", body: "List with a condition score verified from tracked history, not a one-time snapshot." },
+  {
+    emoji: "📸",
+    title: "Catalog from photos",
+    body: "Upload closet photos or paste product links. Slaydar tags category, color, material, and brand automatically.",
+  },
+  {
+    emoji: "🔥",
+    title: "Stat-backed roasts",
+    body: "Check in daily. Slaydar's AI roasts your wear habits using exact stats — never your body, always your wardrobe.",
+  },
+  {
+    emoji: "📊",
+    title: "Track wear history",
+    body: "Monitor wear counts, cost-per-wear, and staleness. Overworn and forgotten pieces get flagged automatically.",
+  },
+  {
+    emoji: "💰",
+    title: "Resell with proof",
+    body: "List items with a verified Condition Score computed from real wear logs, carrying DataHub lineage to buyers.",
+  },
 ];
 
 export default function Home() {
   return (
-    <main className="flex-1 bg-gradient-to-br from-fuchsia-600 via-purple-600 to-indigo-700 text-white">
-      <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-20 text-center">
-        <RadarMark />
-        <h1 className="mt-6 text-6xl font-extrabold tracking-tight drop-shadow-sm">Slaydar</h1>
-        <p className="mt-3 text-sm font-semibold tracking-[0.2em] text-lime-300 uppercase">
-          We know you better than you do you 😮‍💨
+    <main className="flex-1 text-white">
+      <div className="mx-auto flex max-w-4xl flex-col items-center px-6 py-16 text-center">
+        {/* Slaydar Agent Mascot Icon */}
+        <SlaydarBadge />
+
+        <div className="mt-6 flex items-center gap-2 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/30 px-4 py-1 text-xs font-black uppercase tracking-widest text-fuchsia-300 shadow-sm">
+          <span className="h-2 w-2 rounded-full bg-[#d9ff3b] animate-ping" />
+          Slaydar Wardrobe Agent
+        </div>
+
+        <h1 className="mt-4 text-5xl font-black tracking-tight text-white sm:text-6xl drop-shadow-md">
+          We know your wardrobe better than <span className="text-[#d9ff3b] text-glow-lime">you do you</span> 😮‍💨
+        </h1>
+
+        <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-slate-300 sm:text-lg">
+          Catalog your closet from photos, get roasted by your personal AI fashion judge for how you actually wear your clothes, and turn wear history into a verified trust signal when you resell.
         </p>
 
-        <p className="mt-6 max-w-xl text-lg text-white/90">
-          Catalog your closet from photos, get roasted (affectionately) for how you actually wear
-          your clothes, and turn that wear history into a trust signal when you resell. All backed
-          by real usage data, not a one-time snapshot.
-        </p>
-
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
+        {/* CTA Buttons */}
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link
             href="/upload"
-            className="rounded-full bg-lime-300 px-6 py-3 text-sm font-bold text-purple-950 shadow-lg shadow-black/20 transition hover:bg-lime-200"
+            className="min-h-[48px] flex items-center justify-center rounded-full bg-[#d9ff3b] px-8 text-sm font-black text-[#0d0714] shadow-lg shadow-[#d9ff3b]/20 transition-all hover:bg-lime-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#d9ff3b]"
           >
-            Upload your closet
+            Upload your closet →
           </Link>
           <Link
             href="/closet"
-            className="rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-bold backdrop-blur transition hover:bg-white/20"
+            className="min-h-[48px] flex items-center justify-center rounded-full glass-card px-8 text-sm font-black text-white transition-all hover:bg-white/10 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-fuchsia-400"
           >
             View closet
           </Link>
         </div>
 
-        {/* Live preview of the actual roast persona — locked examples from PLAN.md §5 */}
-        <div className="mt-14 w-full max-w-md rounded-2xl bg-white p-5 text-left text-gray-900 shadow-2xl">
-          <p className="text-xs font-semibold tracking-wide text-purple-500 uppercase">Slaydar says</p>
-          <div className="mt-3 flex items-start gap-3">
-            <span className="mt-0.5 shrink-0 rounded-full bg-fuchsia-100 px-2 py-1 text-xs font-bold text-fuchsia-700">
-              worn 4x this week
+        {/* Slaydar AI Judgment Showcase Section */}
+        <div className="mt-14 w-full max-w-xl text-left">
+          <div className="mb-3 flex items-center justify-between px-2">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-fuchsia-400">
+              Live Agent Roasts
             </span>
-            <p className="text-sm">Fourth time this week, bestie. This shirt is unionizing.</p>
+            <span className="text-[11px] font-semibold text-slate-400">
+              Locked Persona Prompt Spec
+            </span>
           </div>
-          <div className="mt-3 flex items-start gap-3">
-            <span className="mt-0.5 shrink-0 rounded-full bg-indigo-100 px-2 py-1 text-xs font-bold text-indigo-700">
-              14 owned, 3 worn
-            </span>
-            <p className="text-sm">You own 14 black t-shirts and wore 3 of them. List the other 11.</p>
+
+          <div className="space-y-4">
+            <SlaydarAgentCard
+              statTag="worn 4x this week"
+              roastText="Fourth time this week, bestie. This shirt is unionizing."
+            />
+            <SlaydarAgentCard
+              statTag="14 owned, 3 worn"
+              roastText="You own 14 black t-shirts and wore 3 of them. List the other 11."
+            />
           </div>
         </div>
 
-        <div className="mt-16 grid w-full grid-cols-2 gap-4 sm:grid-cols-4">
+        {/* Features 4-Card Grid */}
+        <div className="mt-16 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 text-left">
           {FEATURES.map((f) => (
-            <div key={f.title} className="rounded-xl bg-white/10 p-4 text-left backdrop-blur">
-              <span className="text-2xl">{f.emoji}</span>
-              <p className="mt-2 text-sm font-bold">{f.title}</p>
-              <p className="mt-1 text-xs text-white/70">{f.body}</p>
+            <div
+              key={f.title}
+              className="glass-card glass-card-hover flex flex-col justify-between rounded-2xl p-5"
+            >
+              <div>
+                <span className="text-3xl" role="img" aria-label={f.title}>
+                  {f.emoji}
+                </span>
+                <h2 className="mt-3 text-base font-extrabold text-white">{f.title}</h2>
+                <p className="mt-1.5 text-xs font-medium leading-relaxed text-slate-300">{f.body}</p>
+              </div>
             </div>
           ))}
         </div>
 
-        <p className="mt-14 text-xs text-white/60">
-          Every garment is tracked as real, verifiable data, built on DataHub.
-        </p>
+        {/* Provenance footer notice */}
+        <div className="mt-14 flex items-center gap-2 rounded-full glass-card px-4 py-2 text-xs font-semibold text-slate-400">
+          <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          Verifiable wardrobe wear data backed by DataHub lineage
+        </div>
       </div>
     </main>
   );

@@ -120,19 +120,34 @@ export default function UploadPage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
-      <p className="text-xs font-bold tracking-[0.2em] text-fuchsia-600 uppercase dark:text-fuchsia-400">
-        Step one
-      </p>
-      <h1 className="mt-1 text-3xl font-extrabold sm:text-4xl">Upload your closet</h1>
-      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-        Add a few photos of your clothes and Slaydar will tag each one.
-      </p>
+    <main className="mx-auto max-w-3xl px-6 py-12 text-white">
+      <div>
+        <span className="text-xs font-black uppercase tracking-widest text-fuchsia-400">
+          Step 1: Catalog Vault
+        </span>
+        <h1 className="mt-1 text-4xl font-black tracking-tight text-white sm:text-5xl">
+          Upload Your Closet
+        </h1>
+        <p className="mt-2 text-sm font-medium text-slate-300">
+          Upload photos of your garments. Slaydar Vision AI will tag category, color, material, and brand.
+        </p>
+      </div>
 
-      <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-fuchsia-300 bg-fuchsia-50/50 p-10 text-center transition hover:border-fuchsia-400 hover:bg-fuchsia-50 dark:border-fuchsia-500/30 dark:bg-fuchsia-500/5 dark:hover:bg-fuchsia-500/10">
-        <span className="text-3xl">📸</span>
-        <span className="mt-2 text-sm font-semibold">Click to choose photos</span>
-        <span className="mt-1 text-xs text-gray-500 dark:text-gray-400">or drag and drop</span>
+      {/* Dotted Neon Dropzone */}
+      <label className="mt-8 flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-fuchsia-500/40 bg-fuchsia-500/5 p-8 text-center transition-all hover:border-[#d9ff3b] hover:bg-fuchsia-500/10 focus-within:ring-2 focus-within:ring-[#d9ff3b]">
+        <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-purple-600 p-[2px] shadow-lg shadow-fuchsia-500/20">
+          <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-[#0d0714]">
+            <span className="text-2xl" role="img" aria-label="Camera Icon">
+              📸
+            </span>
+          </div>
+        </div>
+        <span className="mt-4 text-base font-extrabold text-white">
+          Click to choose outfit photos
+        </span>
+        <span className="mt-1 text-xs font-semibold text-slate-400">
+          or drag and drop JPEG/PNG images
+        </span>
         <input
           type="file"
           accept="image/*"
@@ -142,96 +157,122 @@ export default function UploadPage() {
         />
       </label>
 
+      {/* Photo Preview Grid */}
       {photos.length > 0 && (
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {photos.map((photo, index) => {
-            const result = results[photo.previewUrl];
-            const extractedData =
-              result?.status === "saved" || result?.status === "error" ? result.data : undefined;
-            return (
-              <div key={photo.previewUrl} className="rounded-xl bg-white/60 p-2 shadow-sm dark:bg-white/5">
-                <div className="group relative aspect-square">
-                  {isHeicFile(photo.file) ? (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-lg bg-fuchsia-100 p-2 text-center dark:bg-fuchsia-500/10">
-                      <span className="text-2xl">🖼️</span>
-                      <span className="line-clamp-2 text-[10px] break-all text-fuchsia-700 dark:text-fuchsia-300">
-                        {photo.file.name}
-                      </span>
-                      <span className="text-[9px] text-gray-500 dark:text-gray-400">no preview, still works</span>
-                    </div>
-                  ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={photo.previewUrl}
-                      alt={photo.file.name}
-                      className="h-full w-full rounded-lg object-cover"
-                    />
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => removePhoto(index)}
-                    className="absolute top-1 right-1 rounded-full bg-black/60 px-1.5 text-xs text-white opacity-0 group-hover:opacity-100"
-                    aria-label={`Remove ${photo.file.name}`}
-                  >
-                    ×
-                  </button>
-                </div>
-                {result?.status === "pending" && (
-                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Tagging…</p>
-                )}
-                {result?.status === "saving" && (
-                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Saving to closet…</p>
-                )}
-                {result?.status === "error" && (
-                  <p className="mt-2 text-xs text-red-500">{result.message}</p>
-                )}
-                {result?.status === "saved" && (
-                  <p className="mt-2 text-xs font-bold text-green-600">Saved ✓</p>
-                )}
-                {extractedData && (
-                  <>
-                    <GarmentChips data={extractedData} />
-                    {crossMatches[photo.previewUrl]?.status === "checking" && (
-                      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Checking if anyone else has this…</p>
-                    )}
-                    {crossMatches[photo.previewUrl]?.status === "found" && (
-                      <div className="mt-2 rounded-lg border border-fuchsia-300 bg-fuchsia-50 p-2 text-xs dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
-                        {(() => {
-                          const cm = crossMatches[photo.previewUrl];
-                          if (cm.status !== "found") return null;
-                          return (
-                            <>
-                              <p className="font-semibold text-fuchsia-700 dark:text-fuchsia-300">
-                                🔎 {cm.garment.owner_id} has this too
-                              </p>
-                              <Link
-                                href={`/listing/${cm.garment.garment_id}`}
-                                className="font-medium text-fuchsia-700 underline dark:text-fuchsia-300"
-                              >
-                                View their listing
-                              </Link>
-                            </>
-                          );
-                        })()}
+        <div className="mt-8">
+          <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-400">
+            Selected Photos ({photos.length})
+          </h2>
+
+          <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {photos.map((photo, index) => {
+              const result = results[photo.previewUrl];
+              const extractedData =
+                result?.status === "saved" || result?.status === "error" ? result.data : undefined;
+              return (
+                <div
+                  key={photo.previewUrl}
+                  className="glass-card flex flex-col justify-between overflow-hidden rounded-2xl p-3 border border-white/10"
+                >
+                  <div className="group relative aspect-square w-full overflow-hidden rounded-xl bg-black">
+                    {isHeicFile(photo.file) ? (
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-fuchsia-500/10 p-2 text-center">
+                        <span className="text-2xl">🖼️</span>
+                        <span className="line-clamp-2 text-[10px] break-all font-semibold text-fuchsia-200">
+                          {photo.file.name}
+                        </span>
+                        <span className="text-[9px] text-slate-400">no preview, still works</span>
                       </div>
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={photo.previewUrl}
+                        alt={photo.file.name}
+                        className="h-full w-full object-cover transition group-hover:scale-105"
+                      />
                     )}
-                  </>
-                )}
-              </div>
-            );
-          })}
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(index)}
+                      className="absolute top-2 right-2 min-h-[32px] min-w-[32px] flex items-center justify-center rounded-full bg-black/80 text-xs font-bold text-white transition hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-rose-400"
+                      aria-label={`Remove ${photo.file.name}`}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {result?.status === "pending" && (
+                    <div className="mt-3 flex items-center gap-2 text-xs font-bold text-fuchsia-400 animate-pulse">
+                      <span className="h-2 w-2 rounded-full bg-fuchsia-400 animate-ping" />
+                      Vision Tagging...
+                    </div>
+                  )}
+                  {result?.status === "saving" && (
+                    <div className="mt-3 flex items-center gap-2 text-xs font-bold text-amber-400 animate-pulse">
+                      <span className="h-2 w-2 rounded-full bg-amber-400" />
+                      Saving to vault...
+                    </div>
+                  )}
+                  {result?.status === "error" && (
+                    <p className="mt-3 text-xs font-bold text-rose-400">⚠️ {result.message}</p>
+                  )}
+                  {result?.status === "saved" && (
+                    <p className="mt-3 text-xs font-black text-emerald-400 flex items-center gap-1">
+                      ✓ Extracted &amp; Saved
+                    </p>
+                  )}
+                  {extractedData && (
+                    <div className="mt-1">
+                      <GarmentChips data={extractedData} />
+
+                      {crossMatches[photo.previewUrl]?.status === "checking" && (
+                        <p className="mt-2 text-[11px] text-slate-400 animate-pulse">Checking network...</p>
+                      )}
+                      {crossMatches[photo.previewUrl]?.status === "found" && (
+                        <div className="mt-3 rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/10 p-2.5 text-[11px]">
+                          {(() => {
+                            const cm = crossMatches[photo.previewUrl];
+                            if (cm.status !== "found") return null;
+                            return (
+                              <>
+                                <p className="font-extrabold text-fuchsia-300">
+                                  🔎 {cm.garment.owner_id} owns this too
+                                </p>
+                                <Link
+                                  href={`/listing/${cm.garment.garment_id}`}
+                                  className="mt-1 inline-block font-bold text-fuchsia-300 underline hover:text-white"
+                                >
+                                  View their listing →
+                                </Link>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={handleExtract}
-        disabled={photos.length === 0 || isExtracting}
-        className="mt-6 rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-500/20 transition hover:shadow-lg hover:shadow-purple-500/30 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        {isExtracting ? "Extracting…" : `Extract ${photos.length || ""} item${photos.length === 1 ? "" : "s"}`}
-      </button>
+      {/* Extract Trigger Action */}
+      <div className="mt-8 flex justify-start">
+        <button
+          type="button"
+          onClick={handleExtract}
+          disabled={photos.length === 0 || isExtracting}
+          className="min-h-[48px] rounded-full bg-[#d9ff3b] px-8 text-xs font-black uppercase tracking-wider text-[#0d0714] shadow-lg shadow-[#d9ff3b]/20 transition-all hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-[#d9ff3b]"
+        >
+          {isExtracting
+            ? "Extracting Vision Tags..."
+            : `Extract ${photos.length || ""} Item${photos.length === 1 ? "" : "s"} →`}
+        </button>
+      </div>
 
+      {/* Product Link Resolver Integration */}
       <LinkResolveForm />
     </main>
   );

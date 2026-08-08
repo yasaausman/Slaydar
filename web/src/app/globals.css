@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --page-gradient: linear-gradient(180deg, #fdf2ff 0%, #ffffff 30%, #eef1ff 100%);
+  --background: #0d0714;
+  --foreground: #f8fafc;
+  --page-gradient: radial-gradient(ellipse at 50% 0%, #240c42 0%, #0d0714 65%, #050209 100%);
 }
 
 @theme inline {
@@ -11,13 +11,21 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-obsidian: #0d0714;
+  --color-obsidian-card: #150c22;
+  --color-obsidian-border: rgba(255, 255, 255, 0.1);
+  --color-lime-slay: #d9ff3b;
+  --color-fuchsia-slay: #f43f5e;
+  --color-purple-glow: #a855f7;
+  --color-indigo-slay: #6366f1;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --page-gradient: linear-gradient(180deg, #1a0b2e 0%, #0a0a0a 35%, #0a0a1a 100%);
+    --background: #0d0714;
+    --foreground: #f8fafc;
+    --page-gradient: radial-gradient(ellipse at 50% 0%, #240c42 0%, #0d0714 65%, #050209 100%);
   }
 }
 
@@ -25,5 +33,57 @@ body {
   background: var(--page-gradient);
   background-attachment: fixed;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
 }
+
+/* Glassmorphism utilities */
+.glass-panel {
+  background: rgba(21, 12, 34, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card-hover {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(217, 255, 59, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(217, 255, 59, 0.1);
+}
+
+/* Glowing text and keyframes */
+.text-glow-lime {
+  text-shadow: 0 0 12px rgba(217, 255, 59, 0.5);
+}
+
+.text-glow-fuchsia {
+  text-shadow: 0 0 12px rgba(244, 63, 94, 0.5);
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+

@@ -74,64 +74,75 @@ export default function LinkResolveForm() {
   }
 
   return (
-    <div className="mt-10 border-t border-purple-100 pt-6 dark:border-white/10">
-      <h2 className="text-sm font-bold text-purple-700 dark:text-purple-300">🔗 Or paste a product link</h2>
-      <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-        Skip the photo. Paste a retailer product page and Slaydar resolves it into a catalog entry.
+    <div className="mt-12 border-t border-white/10 pt-8">
+      <div className="flex items-center gap-2">
+        <span className="text-xl" role="img" aria-label="Link Icon">
+          🔗
+        </span>
+        <h2 className="text-base font-extrabold text-white">Or paste a retailer product link</h2>
+      </div>
+      <p className="mt-1 text-xs font-medium text-slate-400">
+        Skip uploading photos. Paste a retailer product page URL and Slaydar will extract garment details automatically.
       </p>
 
-      <form onSubmit={handleResolve} className="mt-3 flex gap-2">
+      <form onSubmit={handleResolve} className="mt-4 flex flex-col sm:flex-row gap-2">
         <input
           type="url"
           required
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://retailer.example.com/product/..."
-          className="flex-1 rounded-full border border-purple-200 bg-white px-4 py-2 text-sm dark:border-white/20 dark:bg-white/5"
+          className="min-h-[48px] flex-1 rounded-full border border-white/15 bg-white/5 px-5 text-xs text-white placeholder-slate-500 transition focus:border-[#d9ff3b] focus:outline-none focus:ring-2 focus:ring-[#d9ff3b]/40"
         />
         <button
           type="submit"
           disabled={stage.step === "resolving" || !url}
-          className="rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
+          className="min-h-[48px] rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-6 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-fuchsia-500/20 transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400"
         >
-          {stage.step === "resolving" ? "Resolving…" : "Resolve"}
+          {stage.step === "resolving" ? "Extracting..." : "Resolve Link →"}
         </button>
       </form>
 
-      {stage.step === "error" && <p className="mt-3 text-sm text-red-500">{stage.message}</p>}
+      {stage.step === "error" && (
+        <p className="mt-3 text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl">
+          ⚠️ {stage.message}
+        </p>
+      )}
 
       {(stage.step === "preview" || stage.step === "saving") && (
-        <div className="mt-4 rounded-xl bg-white/70 p-4 shadow-sm dark:bg-white/5">
-          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Resolved to</p>
+        <div className="mt-4 glass-card rounded-2xl p-5 border border-fuchsia-500/30">
+          <p className="text-xs font-extrabold uppercase tracking-widest text-fuchsia-400">
+            Resolved Catalog Entry
+          </p>
           <GarmentChips data={stage.data} />
           <button
             type="button"
             onClick={() => handleSave(stage.data)}
             disabled={stage.step === "saving"}
-            className="mt-3 rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm disabled:opacity-40"
+            className="mt-4 min-h-[44px] rounded-full bg-[#d9ff3b] px-6 text-xs font-black uppercase tracking-wider text-[#0d0714] shadow-md transition hover:scale-105 disabled:opacity-40"
           >
-            {stage.step === "saving" ? "Saving…" : "Save to closet"}
+            {stage.step === "saving" ? "Saving..." : "Save to Closet Vault ✓"}
           </button>
 
           {crossMatch?.status === "checking" && (
-            <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Checking if anyone else has this…</p>
+            <p className="mt-3 text-xs text-slate-400 animate-pulse">Checking Slaydar network for twin garments...</p>
           )}
           {crossMatch?.status === "found" && (
-            <div className="mt-3 rounded-lg border border-fuchsia-300 bg-fuchsia-50 p-3 text-xs dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
-              <p className="font-semibold text-fuchsia-700 dark:text-fuchsia-300">
-                🔎 Someone else has this exact item
+            <div className="mt-4 rounded-xl border border-fuchsia-500/40 bg-fuchsia-500/10 p-4 text-xs">
+              <p className="font-extrabold text-fuchsia-300">
+                🔎 Someone else in the network owns this exact garment!
               </p>
-              <p className="mt-1 text-gray-600 dark:text-gray-300">
-                <strong>{crossMatch.garment.owner_id}</strong> owns a {crossMatch.garment.color}{" "}
-                {crossMatch.garment.category}
+              <p className="mt-1 text-slate-300">
+                Owner <strong className="text-white">{crossMatch.garment.owner_id}</strong> has a{" "}
+                <span className="capitalize">{crossMatch.garment.color} {crossMatch.garment.category}</span>
                 {crossMatch.garment.brand ? ` (${crossMatch.garment.brand})` : ""}, condition score{" "}
-                {crossMatch.garment.condition_score}.
+                <strong className="text-[#d9ff3b]">{crossMatch.garment.condition_score}</strong>.
               </p>
               <Link
                 href={`/listing/${crossMatch.garment.garment_id}`}
-                className="mt-1 inline-block font-medium text-fuchsia-700 underline dark:text-fuchsia-300"
+                className="mt-2 inline-block font-extrabold text-fuchsia-300 underline hover:text-white"
               >
-                View their listing
+                View their resale listing →
               </Link>
             </div>
           )}
@@ -139,7 +150,9 @@ export default function LinkResolveForm() {
       )}
 
       {stage.step === "saved" && (
-        <p className="mt-3 text-sm font-bold text-green-600">Saved to closet ({stage.garmentId})</p>
+        <p className="mt-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 p-3 text-xs font-bold text-emerald-400">
+          ✓ Saved to closet vault (<code className="text-white">{stage.garmentId}</code>)
+        </p>
       )}
     </div>
   );

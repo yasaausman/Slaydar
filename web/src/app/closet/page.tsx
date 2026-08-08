@@ -2,74 +2,88 @@ import Link from "next/link";
 import { mockGarments, type Garment } from "@/lib/mock-garments";
 import { DEMO_OWNER_ID } from "@/lib/constants";
 import { fetchCloset } from "@/lib/backend";
+import PinterestClosetGrid from "@/components/PinterestClosetGrid";
 
 async function getCloset(): Promise<{ garments: Garment[]; live: boolean }> {
   const garments = await fetchCloset(DEMO_OWNER_ID);
   return garments ? { garments, live: true } : { garments: mockGarments, live: false };
 }
 
-const statusStyles: Record<Garment["status"], string> = {
-  active: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300",
-  "flagged-overworn": "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
-  "flagged-unworn": "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
-  "listed-for-resale": "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
-};
-
-const cardAccent: Record<Garment["status"], string> = {
-  active: "border-t-gray-300 dark:border-t-white/20",
-  "flagged-overworn": "border-t-red-400",
-  "flagged-unworn": "border-t-amber-400",
-  "listed-for-resale": "border-t-blue-400",
-};
-
 export default async function ClosetPage() {
   const { garments, live } = await getCloset();
 
-  return (
-    <main className="mx-auto max-w-4xl px-6 py-12">
-      <p className="text-xs font-bold tracking-[0.2em] text-fuchsia-600 uppercase dark:text-fuchsia-400">
-        Your wardrobe
-      </p>
-      <h1 className="mt-1 text-3xl font-extrabold sm:text-4xl">Closet</h1>
-      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-        {live ? "Live from DataHub via /api." : "Backend's unreachable right now, so this is mock data."}
-      </p>
+  const overwornCount = garments.filter((g) => g.status === "flagged-overworn").length;
+  const unwornCount = garments.filter((g) => g.status === "flagged-unworn").length;
+  const resaleCount = garments.filter((g) => g.status === "listed-for-resale").length;
 
-      {garments.length === 0 ? (
-        <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">Nothing here yet. Upload some photos first.</p>
-      ) : (
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {garments.map((garment) => (
-            <div
-              key={garment.garment_id}
-              className={`rounded-xl border-t-4 bg-white/70 p-4 shadow-sm dark:bg-white/5 ${cardAccent[garment.status]}`}
+  return (
+    <main className="mx-auto max-w-6xl px-6 py-12 text-white">
+      {/* Pinterest Board Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-xl" role="img" aria-label="Pinterest Board Icon">
+              📌
+            </span>
+            <span className="text-xs font-black uppercase tracking-widest text-[#d9ff3b]">
+              ishani&apos;s Wardrobe Board
+            </span>
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-widest border ${
+                live
+                  ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                  : "bg-purple-500/15 text-purple-300 border-purple-500/30"
+              }`}
             >
-              <div className="flex items-start justify-between gap-2">
-                <span className="text-sm font-bold capitalize">{garment.category}</span>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${statusStyles[garment.status]}`}>
-                  {garment.status}
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-                {garment.color} · {garment.material}
-                {garment.brand ? ` · ${garment.brand}` : ""}
-              </p>
-              <p className="mt-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                Worn {garment.wear_count}x
-                {garment.last_worn_date ? ` · last ${garment.last_worn_date}` : ""}
-              </p>
-              {(garment.status === "flagged-overworn" || garment.status === "flagged-unworn") && (
-                <Link
-                  href={`/listing/${garment.garment_id}`}
-                  className="mt-3 block rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 py-1.5 text-center text-xs font-bold text-white shadow-sm"
-                >
-                  List for resale
-                </Link>
-              )}
-            </div>
-          ))}
+              {live ? "Live DataHub API" : "Mock Board Preview"}
+            </span>
+          </div>
+          <h1 className="mt-1 text-4xl font-black tracking-tight text-white sm:text-5xl">
+            Pinterest Closet Board
+          </h1>
+          <p className="mt-1.5 text-sm font-medium text-slate-300">
+            Aesthetic wardrobe catalog pins with real wear metrics and resale trust scores.
+          </p>
         </div>
-      )}
+
+        <Link
+          href="/upload"
+          className="mt-4 sm:mt-0 inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[#d9ff3b] px-6 text-xs font-black uppercase tracking-wider text-[#0d0714] shadow-lg shadow-[#d9ff3b]/20 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#d9ff3b]"
+        >
+          <span>+ Pin new garment</span>
+        </Link>
+      </div>
+
+      {/* Summary KPI Board Bar */}
+      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="glass-card rounded-2xl p-4 border border-white/10">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+            Total Pins
+          </span>
+          <p className="mt-1 text-2xl font-black text-white">{garments.length}</p>
+        </div>
+        <div className="glass-card rounded-2xl p-4 border border-rose-500/20 bg-rose-500/5">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-400">
+            🔥 Overworn
+          </span>
+          <p className="mt-1 text-2xl font-black text-rose-300">{overwornCount}</p>
+        </div>
+        <div className="glass-card rounded-2xl p-4 border border-amber-500/20 bg-amber-500/5">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400">
+            💤 Forgotten
+          </span>
+          <p className="mt-1 text-2xl font-black text-amber-300">{unwornCount}</p>
+        </div>
+        <div className="glass-card rounded-2xl p-4 border border-cyan-500/20 bg-cyan-500/5">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-cyan-400">
+            🏷️ Resale Ready
+          </span>
+          <p className="mt-1 text-2xl font-black text-cyan-300">{resaleCount}</p>
+        </div>
+      </div>
+
+      {/* Interactive Pinterest Masonry Grid */}
+      <PinterestClosetGrid garments={garments} />
     </main>
   );
 }
