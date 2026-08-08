@@ -46,9 +46,22 @@ export async function POST(req: NextRequest) {
 
   let html: string;
   try {
+    // Present as a real browser — a "SlaydarBot" UA gets 403'd by most retailers.
+    // This bypasses naive bot checks (still no guarantee vs. aggressive walls like Akamai).
     const res = await fetch(url, {
       signal: AbortSignal.timeout(8000),
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; SlaydarBot/1.0)" },
+      redirect: "follow",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Upgrade-Insecure-Requests": "1",
+      },
     });
     if (!res.ok) throw new Error(`Fetching the page failed with ${res.status}`);
     html = (await res.text()).slice(0, 300_000);
