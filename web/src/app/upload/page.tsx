@@ -123,7 +123,7 @@ export default function UploadPage() {
   return (
     <main className="mx-auto max-w-3xl px-6 py-12 text-white">
       <div>
-        <span className="text-xs font-black uppercase tracking-widest text-indigo-400">
+        <span className="text-xs font-black uppercase tracking-widest text-pink-400">
           Step 1: Catalog Vault
         </span>
         <h1 className="font-display mt-2 text-5xl text-white sm:text-6xl">
@@ -135,10 +135,10 @@ export default function UploadPage() {
       </div>
 
       {/* Dotted Neon Dropzone */}
-      <label className="mt-8 flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-indigo-500/40 bg-indigo-500/5 p-8 text-center transition-all hover:border-[#38bdf8] hover:bg-indigo-500/10 focus-within:ring-2 focus-within:ring-[#38bdf8]">
-        <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-500 to-blue-600 p-[2px] shadow-lg shadow-indigo-500/20">
-          <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-[#070c1a]">
-            <Camera className="h-6 w-6 text-[#38bdf8]" strokeWidth={2.25} aria-hidden="true" />
+      <label className="mt-8 flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-pink-500/40 bg-pink-500/5 p-8 text-center transition-all hover:border-[#ccff00] hover:bg-pink-500/10 focus-within:ring-2 focus-within:ring-[#ccff00]">
+        <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-600 p-[2px] shadow-lg shadow-pink-500/20">
+          <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-[#0c0b14]">
+            <Camera className="h-6 w-6 text-[#ccff00]" strokeWidth={2.25} aria-hidden="true" />
           </div>
         </div>
         <span className="mt-4 text-base font-extrabold text-white">
@@ -175,9 +175,9 @@ export default function UploadPage() {
                 >
                   <div className="group relative aspect-square w-full overflow-hidden rounded-xl bg-black">
                     {isHeicFile(photo.file) ? (
-                      <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-indigo-500/10 p-2 text-center">
-                        <ImageOff className="h-7 w-7 text-indigo-200" strokeWidth={2} aria-hidden="true" />
-                        <span className="line-clamp-2 text-[10px] break-all font-semibold text-indigo-200">
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-pink-500/10 p-2 text-center">
+                        <ImageOff className="h-7 w-7 text-pink-200" strokeWidth={2} aria-hidden="true" />
+                        <span className="line-clamp-2 text-[10px] break-all font-semibold text-pink-200">
                           {photo.file.name}
                         </span>
                         <span className="text-[9px] text-slate-400">no preview, still works</span>
@@ -201,8 +201,8 @@ export default function UploadPage() {
                   </div>
 
                   {result?.status === "pending" && (
-                    <div className="mt-3 flex items-center gap-2 text-xs font-bold text-indigo-400 animate-pulse">
-                      <span className="h-2 w-2 rounded-full bg-indigo-400 animate-ping" />
+                    <div className="mt-3 flex items-center gap-2 text-xs font-bold text-pink-400 animate-pulse">
+                      <span className="h-2 w-2 rounded-full bg-pink-400 animate-ping" />
                       Vision Tagging...
                     </div>
                   )}
@@ -232,19 +232,19 @@ export default function UploadPage() {
                         <p className="mt-2 text-[11px] text-slate-400 animate-pulse">Checking network...</p>
                       )}
                       {crossMatches[photo.previewUrl]?.status === "found" && (
-                        <div className="mt-3 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-2.5 text-[11px]">
+                        <div className="mt-3 rounded-xl border border-pink-500/30 bg-pink-500/10 p-2.5 text-[11px]">
                           {(() => {
                             const cm = crossMatches[photo.previewUrl];
                             if (cm.status !== "found") return null;
                             return (
                               <>
-                                <p className="flex items-center gap-1.5 font-extrabold text-indigo-300">
+                                <p className="flex items-center gap-1.5 font-extrabold text-pink-300">
                                   <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} aria-hidden="true" />
                                   {cm.garment.owner_id} owns this too
                                 </p>
                                 <Link
                                   href={`/listing/${cm.garment.garment_id}`}
-                                  className="mt-1 inline-flex items-center gap-1 font-bold text-indigo-300 underline hover:text-white"
+                                  className="mt-1 inline-flex items-center gap-1 font-bold text-pink-300 underline hover:text-white"
                                 >
                                   View their listing
                                   <ArrowRight className="h-3 w-3" strokeWidth={2.5} aria-hidden="true" />
@@ -269,7 +269,7 @@ export default function UploadPage() {
           type="button"
           onClick={handleExtract}
           disabled={photos.length === 0 || isExtracting}
-          className="min-h-[48px] rounded-full bg-[#38bdf8] px-8 text-xs font-black uppercase tracking-wider text-[#070c1a] shadow-lg shadow-[#38bdf8]/20 transition-all hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
+          className="min-h-[48px] rounded-full bg-[#ccff00] px-8 text-xs font-black uppercase tracking-wider text-[#0c0b14] shadow-lg shadow-[#ccff00]/20 transition-all hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ccff00]"
         >
           {isExtracting
             ? "Extracting Vision Tags..."

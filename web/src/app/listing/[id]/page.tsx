@@ -20,7 +20,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
       {/* Page Title Header */}
       <div>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#38bdf8]">
+          <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#ccff00]">
             <ShieldCheck className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
             Verified Resale Listing
           </span>
@@ -33,13 +33,13 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
           {garment.brand ? `, ${garment.brand}` : ""}
         </h1>
         <p className="mt-1.5 text-sm font-medium text-slate-300">
-          Owner: <code className="text-[#38bdf8] font-bold">{garment.owner_id}</code> · ID: <code className="text-slate-400">{garment.garment_id}</code>
+          Owner: <code className="text-[#ccff00] font-bold">{garment.owner_id}</code> · ID: <code className="text-slate-400">{garment.garment_id}</code>
         </p>
       </div>
 
       {/* Hero Condition Ring Card */}
       <div className="mt-8 glass-panel relative overflow-hidden rounded-3xl p-8 text-center border border-white/10 shadow-2xl">
-        <div className="pointer-events-none absolute -top-12 -left-12 h-40 w-40 rounded-full bg-indigo-600/15 blur-3xl" />
+        <div className="pointer-events-none absolute -top-12 -left-12 h-40 w-40 rounded-full bg-pink-600/15 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-emerald-500/15 blur-3xl" />
 
         <span className="text-xs font-extrabold uppercase tracking-widest text-slate-400">
@@ -80,7 +80,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
             <DollarSign className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
             Cost Per Wear
           </dt>
-          <dd className="stat-number mt-1.5 text-3xl text-[#38bdf8]">
+          <dd className="stat-number mt-1.5 text-3xl text-[#ccff00]">
             {garment.cost_per_wear != null ? `$${garment.cost_per_wear.toFixed(2)}` : "—"}
           </dd>
         </div>
@@ -90,7 +90,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
             <Shirt className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
             Material
           </dt>
-          <dd className="mt-1.5 text-sm font-extrabold capitalize text-indigo-300 truncate">
+          <dd className="mt-1.5 text-sm font-extrabold capitalize text-pink-300 truncate">
             {garment.material}
           </dd>
         </div>

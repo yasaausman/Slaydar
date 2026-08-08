@@ -1,9 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #070c1a;
-  --foreground: #f8fafc;
-  --page-gradient: radial-gradient(ellipse at 50% 0%, #0a1830 0%, #070c1a 65%, #02040a 100%);
+  --background: #0c0b14;
+  --foreground: #f4f2ff;
+  /* Y2K slate canvas with faint lavender/lime cyber-grid wash */
+  --page-gradient:
+    radial-gradient(ellipse at 50% -10%, rgba(204, 255, 0, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(255, 105, 180, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 90%, rgba(230, 230, 250, 0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #0c0b14 0%, #0a0912 60%, #060510 100%);
+  --y2k-grid:
+    linear-gradient(rgba(230, 230, 250, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(230, 230, 250, 0.04) 1px, transparent 1px);
 }
 
 @theme inline {
@@ -13,25 +21,32 @@
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);
 
-  --color-obsidian: #070c1a;
-  --color-obsidian-card: #0b1120;
-  --color-obsidian-border: rgba(255, 255, 255, 0.1);
-  --color-sky-slay: #38bdf8;
-  --color-indigo-slay: #f43f5e;
-  --color-blue-glow: #3b82f6;
-  --color-indigo-slay: #6366f1;
+  /* Y2K Cyber Gloss palette */
+  --color-y2k-slate: #0c0b14;
+  --color-y2k-lavender: #e6e6fa;
+  --color-y2k-lime: #ccff00;
+  --color-y2k-pink: #ff69b4;
+  --color-y2k-chrome: #c0c0c0;
+
+  /* Back-compat aliases (old token names still referenced in a few spots) */
+  --color-obsidian: #0c0b14;
+  --color-obsidian-card: #14121f;
+  --color-obsidian-border: rgba(192, 192, 192, 0.3);
+  --color-lime-slay: #ccff00;
+  --color-fuchsia-slay: #ff69b4;
+  --color-purple-glow: #e6e6fa;
+  --color-indigo-slay: #ff69b4;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #070c1a;
-    --foreground: #f8fafc;
-    --page-gradient: radial-gradient(ellipse at 50% 0%, #0a1830 0%, #070c1a 65%, #02040a 100%);
+    --background: #0c0b14;
+    --foreground: #f4f2ff;
   }
 }
 
-/* Paint the gradient on the root canvas so no white shows through when scrolled
-   past the body box (avoids background-attachment:fixed compositing gaps). */
+/* Paint the gradient + cyber-grid on the root canvas so no white shows through
+   when scrolled past the body box (avoids background-attachment:fixed gaps). */
 html {
   background: var(--page-gradient);
   background-attachment: fixed;
@@ -40,7 +55,8 @@ html {
 }
 
 body {
-  background: var(--page-gradient);
+  background: var(--y2k-grid), var(--page-gradient);
+  background-size: 40px 40px, 40px 40px, cover;
   background-attachment: fixed;
   background-color: var(--background);
   color: var(--foreground);
@@ -48,7 +64,7 @@ body {
   min-height: 100vh;
 }
 
-/* ── Editorial display type (bold redesign) ─────────────────────────────── */
+/* ── Editorial display type ─────────────────────────────────────────────── */
 .font-display {
   font-family: var(--font-display), "Arial Narrow", system-ui, sans-serif;
   font-weight: 400;
@@ -57,7 +73,6 @@ body {
   text-transform: uppercase;
 }
 
-/* Oversized editorial stat numbers */
 .stat-number {
   font-family: var(--font-display), system-ui, sans-serif;
   font-weight: 400;
@@ -66,24 +81,36 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Hard editorial divider — the "brutalist" structural accent */
+/* Hard editorial divider */
 .rule-hard {
-  border-top: 2px solid rgba(255, 255, 255, 0.14);
+  border-top: 2px solid rgba(192, 192, 192, 0.25);
 }
 
-/* ── Glassmorphism utilities ────────────────────────────────────────────── */
-.glass-panel {
-  background: rgba(11, 17, 32, 0.65);
+/* ── Y2K Cyber Gloss surfaces ───────────────────────────────────────────── */
+/* Chrome-framed lavender glass (glass-panel/glass-card restyled to Y2K so every
+   existing surface inherits the look). */
+.glass-panel,
+.y2k-card {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(230, 230, 250, 0.08) 0%, rgba(230, 230, 250, 0.03) 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(192, 192, 192, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(192, 192, 192, 0.1),
+    0 8px 30px rgba(0, 0, 0, 0.45);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(230, 230, 250, 0.06) 0%, rgba(230, 230, 250, 0.02) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(192, 192, 192, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .glass-card-hover {
@@ -91,46 +118,99 @@ body {
 }
 
 .glass-card-hover:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(56, 189, 248, 0.3);
+  background: linear-gradient(180deg, rgba(204, 255, 0, 0.08) 0%, rgba(230, 230, 250, 0.04) 100%);
+  border-color: rgba(204, 255, 0, 0.55);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 8px 30px rgba(0, 0, 0, 0.5),
+    0 0 22px rgba(204, 255, 0, 0.22);
 }
 
-/* Glowing text and keyframes */
+/* Holographic sheen overlay — drop onto any positioned (relative) container */
+.holo-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 105, 180, 0.12) 38%,
+    rgba(230, 230, 250, 0.16) 48%,
+    rgba(204, 255, 0, 0.12) 60%,
+    transparent 78%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+
+/* Chrome gradient border wrapper (put content in a child with its own bg) */
+.y2k-chrome-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#0c0b14, #0c0b14) padding-box,
+    linear-gradient(135deg, #f5f5f5 0%, #c0c0c0 30%, #8a8a8a 50%, #e6e6fa 70%, #ccff00 100%) border-box;
+}
+
+/* Chrome/holographic text (wordmark, headings) */
+.chrome-text {
+  background: linear-gradient(180deg, #ffffff 0%, #e6e6fa 35%, #c0c0c0 55%, #ff69b4 78%, #ccff00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 10px rgba(230, 230, 250, 0.35));
+}
+
+/* Y2K sticker badge — chrome-outlined holographic pill */
+.y2k-sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #17131f;
+  background: linear-gradient(135deg, #e6e6fa 0%, #ffffff 45%, #ff69b4 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 6px 16px rgba(255, 105, 180, 0.3);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.y2k-sticker-lime {
+  background: linear-gradient(135deg, #ccff00 0%, #eaffa6 50%, #e6e6fa 100%);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 6px 16px rgba(204, 255, 0, 0.3);
+}
+
+/* ── Glow text ──────────────────────────────────────────────────────────── */
+.text-acid-lime,
 .text-glow-primary {
-  text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  color: #ccff00;
+  text-shadow: 0 0 10px rgba(204, 255, 0, 0.6), 0 0 24px rgba(204, 255, 0, 0.35);
 }
 
 .text-glow-secondary {
-  text-shadow: 0 0 12px rgba(129, 140, 248, 0.5);
+  color: #ff69b4;
+  text-shadow: 0 0 10px rgba(255, 105, 180, 0.6), 0 0 24px rgba(255, 105, 180, 0.3);
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 
 .animate-pulse-glow {
   animation: pulseGlow 3s ease-in-out infinite;
 }
 
-/* Editorial bento entrance — staggered rise-in on load */
+/* Editorial bento entrance */
 @keyframes riseIn {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .animate-rise-in {
@@ -138,7 +218,7 @@ body {
   animation: riseIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* ── Accessibility: honor reduced-motion (design-system requirement) ─────── */
+/* ── Accessibility: honor reduced-motion ────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -149,7 +229,5 @@ body {
     scroll-behavior: auto !important;
   }
 
-  .animate-rise-in {
-    opacity: 1;
-  }
+  .animate-rise-in { opacity: 1; }
 }

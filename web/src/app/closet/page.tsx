@@ -23,18 +23,18 @@ export default async function ClosetPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <LayoutGrid className="h-4 w-4 text-[#38bdf8]" strokeWidth={2.5} aria-hidden="true" />
-            <span className="text-xs font-black uppercase tracking-widest text-[#38bdf8]">
+            <LayoutGrid className="h-4 w-4 text-[#ccff00]" strokeWidth={2.5} aria-hidden="true" />
+            <span className="text-xs font-black uppercase tracking-widest text-[#ccff00]">
               ishani&apos;s Wardrobe Board
             </span>
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-widest border ${
                 live
                   ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                  : "bg-blue-500/15 text-blue-300 border-blue-500/30"
+                  : "bg-purple-500/15 text-purple-300 border-purple-500/30"
               }`}
             >
-              <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald-400" : "bg-blue-400"}`} />
+              <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald-400" : "bg-purple-400"}`} />
               {live ? "Live DataHub API" : "Mock Board Preview"}
             </span>
           </div>
@@ -48,7 +48,7 @@ export default async function ClosetPage() {
 
         <Link
           href="/upload"
-          className="mt-4 inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-full bg-[#38bdf8] px-6 text-xs font-black uppercase tracking-wider text-[#070c1a] shadow-lg shadow-[#38bdf8]/20 transition-all hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] sm:mt-0"
+          className="mt-4 inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-full bg-[#ccff00] px-6 text-xs font-black uppercase tracking-wider text-[#0c0b14] shadow-lg shadow-[#ccff00]/20 transition-all hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ccff00] sm:mt-0"
         >
           <Plus className="h-4 w-4" strokeWidth={3} aria-hidden="true" />
           Pin new garment

@@ -13,9 +13,9 @@ type FilterKey = "all" | "active" | "flagged-overworn" | "flagged-unworn" | "lis
 
 const statusBadges: Record<Garment["status"], { bg: string; text: string; border: string; label: string; Icon: LucideIcon }> = {
   active: {
-    bg: "bg-[#38bdf8]/15 shadow-[0_0_12px_rgba(56, 189, 248,0.2)]",
-    text: "text-[#38bdf8]",
-    border: "border-[#38bdf8]/40",
+    bg: "bg-[#ccff00]/15 shadow-[0_0_12px_rgba(56, 189, 248,0.2)]",
+    text: "text-[#ccff00]",
+    border: "border-[#ccff00]/40",
     label: "Active Wear",
     Icon: Sparkles,
   },
@@ -70,9 +70,9 @@ export default function PinterestClosetGrid({ garments }: PinterestClosetGridPro
               key={tab.key}
               type="button"
               onClick={() => setFilter(tab.key)}
-              className={`min-h-[44px] flex cursor-pointer items-center gap-2 rounded-full px-5 text-xs font-black uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] ${
+              className={`min-h-[44px] flex cursor-pointer items-center gap-2 rounded-full px-5 text-xs font-black uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ccff00] ${
                 isActive
-                  ? "bg-[#38bdf8] text-[#070c1a] shadow-lg shadow-[#38bdf8]/20 scale-105"
+                  ? "bg-[#ccff00] text-[#0c0b14] shadow-lg shadow-[#ccff00]/20 scale-105"
                   : "glass-card text-slate-300 border border-white/10 hover:bg-white/10 hover:text-white"
               }`}
             >
@@ -80,7 +80,7 @@ export default function PinterestClosetGrid({ garments }: PinterestClosetGridPro
               <span>{tab.label}</span>
               <span
                 className={`rounded-full px-2 py-0.5 text-[10px] font-black ${
-                  isActive ? "bg-[#070c1a]/20 text-[#070c1a]" : "bg-white/10 text-slate-400"
+                  isActive ? "bg-[#0c0b14]/20 text-[#0c0b14]" : "bg-white/10 text-slate-400"
                 }`}
               >
                 {tab.count}
@@ -106,7 +106,7 @@ export default function PinterestClosetGrid({ garments }: PinterestClosetGridPro
             return (
               <div
                 key={garment.garment_id}
-                className="glass-card glass-card-hover group relative break-inside-avoid flex flex-col overflow-hidden rounded-3xl p-5 border border-white/10 shadow-xl transition-all duration-300 hover:border-[#38bdf8]/40 hover:shadow-2xl hover:shadow-[#38bdf8]/10"
+                className="glass-card glass-card-hover group relative break-inside-avoid flex flex-col overflow-hidden rounded-3xl p-5 border border-white/10 shadow-xl transition-all duration-300 hover:border-[#ccff00]/40 hover:shadow-2xl hover:shadow-[#ccff00]/10"
               >
                 {/* Pin Header */}
                 <div className="flex items-center justify-between gap-2">
@@ -124,7 +124,7 @@ export default function PinterestClosetGrid({ garments }: PinterestClosetGridPro
                     <button
                       type="button"
                       aria-label={`Pin ${garment.color} ${garment.category}`}
-                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white opacity-60 transition group-hover:opacity-100 hover:bg-indigo-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white opacity-60 transition group-hover:opacity-100 hover:bg-pink-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400"
                     >
                       <Bookmark className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
                     </button>
@@ -133,16 +133,16 @@ export default function PinterestClosetGrid({ garments }: PinterestClosetGridPro
 
                 {/* Garment Title & Metadata */}
                 <div className="mt-4">
-                  <h3 className="text-xl font-black capitalize tracking-tight text-white group-hover:text-[#38bdf8] transition">
+                  <h3 className="text-xl font-black capitalize tracking-tight text-white group-hover:text-[#ccff00] transition">
                     {garment.color} {garment.category}
                   </h3>
 
                   <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                    <span className="rounded-full bg-indigo-500/15 border border-indigo-500/30 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-indigo-300">
+                    <span className="rounded-full bg-pink-500/15 border border-pink-500/30 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-pink-300">
                       {garment.material}
                     </span>
                     {garment.brand && (
-                      <span className="rounded-full bg-blue-500/15 border border-blue-500/30 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-blue-300">
+                      <span className="rounded-full bg-purple-500/15 border border-purple-500/30 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-purple-300">
                         {garment.brand}
                       </span>
                     )}
@@ -171,7 +171,7 @@ export default function PinterestClosetGrid({ garments }: PinterestClosetGridPro
                 {garment.cost_per_wear != null && (
                   <div className="mt-2.5 text-xs font-semibold text-slate-400">
                     Cost per wear:{" "}
-                    <strong className="text-[#38bdf8] font-black">${garment.cost_per_wear.toFixed(2)}</strong>
+                    <strong className="text-[#ccff00] font-black">${garment.cost_per_wear.toFixed(2)}</strong>
                   </div>
                 )}
 
@@ -179,7 +179,7 @@ export default function PinterestClosetGrid({ garments }: PinterestClosetGridPro
                 {(garment.status === "flagged-overworn" || garment.status === "flagged-unworn") && (
                   <Link
                     href={`/listing/${garment.garment_id}`}
-                    className="mt-5 flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 px-5 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-indigo-500/20 transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                    className="mt-5 flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 px-5 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-pink-500/20 transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400"
                   >
                     List for resale
                     <ArrowRight className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />

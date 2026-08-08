@@ -74,7 +74,7 @@ export default function CheckinPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-12 text-white">
       <div>
-        <span className="text-xs font-black uppercase tracking-widest text-[#38bdf8]">
+        <span className="text-xs font-black uppercase tracking-widest text-[#ccff00]">
           Step 2: Daily Ritual
         </span>
         <h1 className="font-display mt-2 text-5xl text-white sm:text-6xl">
@@ -86,22 +86,22 @@ export default function CheckinPage() {
       </div>
 
       {/* Outfit Dropzone */}
-      <label className="mt-8 flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-indigo-500/40 bg-indigo-500/5 p-8 text-center transition-all hover:border-[#38bdf8] hover:bg-indigo-500/10 focus-within:ring-2 focus-within:ring-[#38bdf8]">
+      <label className="mt-8 flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-pink-500/40 bg-pink-500/5 p-8 text-center transition-all hover:border-[#ccff00] hover:bg-pink-500/10 focus-within:ring-2 focus-within:ring-[#ccff00]">
         {photo ? (
           isHeicFile(photo.file) ? (
-            <div className="relative flex aspect-square h-44 flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border-2 border-indigo-500/40 bg-indigo-500/10 p-3 text-center shadow-2xl">
-              <ImageOff className="h-8 w-8 text-indigo-200" strokeWidth={2} aria-hidden="true" />
-              <span className="line-clamp-2 text-[10px] break-all font-semibold text-indigo-200">
+            <div className="relative flex aspect-square h-44 flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border-2 border-pink-500/40 bg-pink-500/10 p-3 text-center shadow-2xl">
+              <ImageOff className="h-8 w-8 text-pink-200" strokeWidth={2} aria-hidden="true" />
+              <span className="line-clamp-2 text-[10px] break-all font-semibold text-pink-200">
                 {photo.file.name}
               </span>
               <span className="text-[9px] text-slate-400">no preview, still works</span>
             </div>
           ) : (
-            <div className="relative aspect-square h-44 overflow-hidden rounded-2xl border-2 border-indigo-500/40 shadow-2xl">
+            <div className="relative aspect-square h-44 overflow-hidden rounded-2xl border-2 border-pink-500/40 shadow-2xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={photo.previewUrl} alt="Selected OOTD check-in" className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center p-2">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#38bdf8]">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#ccff00]">
                   Click to change photo
                 </span>
               </div>
@@ -109,9 +109,9 @@ export default function CheckinPage() {
           )
         ) : (
           <>
-            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-500 via-blue-600 to-sky-300 p-[2px] shadow-lg shadow-indigo-500/20">
-              <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-[#070c1a]">
-                <Sparkles className="h-6 w-6 text-[#38bdf8]" strokeWidth={2.25} aria-hidden="true" />
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-pink-500 via-purple-600 to-lime-300 p-[2px] shadow-lg shadow-pink-500/20">
+              <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-[#0c0b14]">
+                <Sparkles className="h-6 w-6 text-[#ccff00]" strokeWidth={2.25} aria-hidden="true" />
               </div>
             </div>
             <span className="mt-4 text-base font-extrabold text-white">
@@ -130,7 +130,7 @@ export default function CheckinPage() {
         <button
           type="button"
           onClick={handleFindMatch}
-          className="mt-6 min-h-[48px] w-full rounded-full bg-[#38bdf8] px-8 text-xs font-black uppercase tracking-wider text-[#070c1a] shadow-lg shadow-[#38bdf8]/20 transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
+          className="mt-6 min-h-[48px] w-full rounded-full bg-[#ccff00] px-8 text-xs font-black uppercase tracking-wider text-[#0c0b14] shadow-lg shadow-[#ccff00]/20 transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ccff00]"
         >
           Find Match in Closet Vault →
         </button>
@@ -138,9 +138,9 @@ export default function CheckinPage() {
 
       {/* Loading Steps */}
       {stage.step === "matching" && (
-        <div className="mt-6 glass-card rounded-2xl p-6 text-center border border-indigo-500/30">
-          <span className="h-3 w-3 inline-block rounded-full bg-indigo-400 animate-ping mr-2" />
-          <span className="text-sm font-extrabold text-indigo-300">
+        <div className="mt-6 glass-card rounded-2xl p-6 text-center border border-pink-500/30">
+          <span className="h-3 w-3 inline-block rounded-full bg-pink-400 animate-ping mr-2" />
+          <span className="text-sm font-extrabold text-pink-300">
             Slaydar Vision AI is scanning your closet vault...
           </span>
         </div>
@@ -156,9 +156,9 @@ export default function CheckinPage() {
       )}
 
       {stage.step === "roasting" && (
-        <div className="mt-6 glass-card rounded-2xl p-6 text-center border border-[#38bdf8]/30">
-          <span className="h-3 w-3 inline-block rounded-full bg-[#38bdf8] animate-ping mr-2" />
-          <span className="text-sm font-extrabold text-[#38bdf8]">
+        <div className="mt-6 glass-card rounded-2xl p-6 text-center border border-[#ccff00]/30">
+          <span className="h-3 w-3 inline-block rounded-full bg-[#ccff00] animate-ping mr-2" />
+          <span className="text-sm font-extrabold text-[#ccff00]">
             Slaydar is analyzing stats to compose your style judgment...
           </span>
         </div>
@@ -169,7 +169,7 @@ export default function CheckinPage() {
         <div className="mt-6 glass-panel rounded-3xl p-6 border border-white/10">
           {stage.matched ? (
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-400">
+              <span className="text-xs font-extrabold uppercase tracking-widest text-pink-400">
                 Slaydar AI Match Candidate
               </span>
               <h3 className="mt-2 text-2xl font-black capitalize text-white">
@@ -184,7 +184,7 @@ export default function CheckinPage() {
                 <button
                   type="button"
                   onClick={() => handleConfirm(stage.matched as Garment)}
-                  className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 px-6 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-indigo-500/20 transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                  className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 px-6 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-pink-500/20 transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400"
                 >
                   Yep, that&apos;s what I&apos;m wearing
                   <Check className="h-4 w-4" strokeWidth={3} aria-hidden="true" />
@@ -216,13 +216,13 @@ export default function CheckinPage() {
                     key={g.garment_id}
                     type="button"
                     onClick={() => handleConfirm(g)}
-                    className="glass-card glass-card-hover flex min-h-[48px] items-center justify-between rounded-xl px-5 text-left text-sm font-bold capitalize text-white transition border border-white/10 hover:border-[#38bdf8]/40"
+                    className="glass-card glass-card-hover flex min-h-[48px] items-center justify-between rounded-xl px-5 text-left text-sm font-bold capitalize text-white transition border border-white/10 hover:border-[#ccff00]/40"
                   >
                     <span>
                       {g.color} {g.category}
                       {g.brand ? ` (${g.brand})` : ""}
                     </span>
-                    <span className="text-xs font-semibold text-[#38bdf8]">
+                    <span className="text-xs font-semibold text-[#ccff00]">
                       Worn {g.wear_count}x →
                     </span>
                   </button>
@@ -237,7 +237,7 @@ export default function CheckinPage() {
       {stage.step === "done" && (
         <div className="mt-8">
           <div className="mb-3 flex items-center justify-between px-2">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-[#38bdf8]">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#ccff00]">
               Check-in Logged Successfully
             </span>
             <span className="text-xs font-bold text-slate-400">

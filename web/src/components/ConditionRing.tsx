@@ -8,10 +8,10 @@ interface ConditionRingProps {
 function getScoreTheme(score: number) {
   if (score >= 80) {
     return {
-      stroke: "#22c55e",
-      text: "text-emerald-400",
-      glow: "shadow-[0_0_20px_rgba(34,197,94,0.3)]",
-      badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+      stroke: "#ccff00",
+      text: "text-[#ccff00]",
+      glow: "shadow-[0_0_24px_rgba(204,255,0,0.4)]",
+      badge: "bg-[#ccff00]/10 text-[#ccff00] border-[#ccff00]/30",
     };
   }
   if (score >= 50) {
@@ -60,7 +60,7 @@ export default function ConditionRing({
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="rgba(255, 255, 255, 0.08)"
+            stroke="rgba(192, 192, 192, 0.28)"
             strokeWidth={strokeWidth}
           />
           {/* Animated score circle */}
