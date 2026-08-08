@@ -80,7 +80,7 @@ export default function ConditionRing({
 
         {/* Center score label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <span className={`text-3xl font-black tracking-tight ${theme.text}`}>
+          <span className={`stat-number text-5xl ${theme.text}`}>
             {score}
           </span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { AlertTriangle, CheckCircle2, ArrowRight } from "lucide-react";
 import type { Garment } from "@/lib/mock-garments";
 
 type LineageNode = { garment_id: string; owner_id: string; urn: string };
@@ -60,7 +61,7 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
           type="button"
           onClick={handleTransfer}
           disabled={transfer.step === "transferring"}
-          className="min-h-[48px] w-full rounded-full bg-[#d9ff3b] px-6 text-xs font-black uppercase tracking-wider text-[#0d0714] shadow-lg shadow-[#d9ff3b]/20 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-[#d9ff3b]"
+          className="min-h-[48px] w-full rounded-full bg-[#38bdf8] px-6 text-xs font-black uppercase tracking-wider text-[#070c1a] shadow-lg shadow-[#38bdf8]/20 transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
         >
           {transfer.step === "transferring"
             ? "Transferring Ownership on DataHub..."
@@ -69,15 +70,17 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
       )}
 
       {transfer.step === "error" && (
-        <p className="rounded-xl bg-rose-500/15 border border-rose-500/30 p-3 text-xs font-bold text-rose-300">
-          ⚠️ {transfer.message}
+        <p className="flex items-center gap-2 rounded-xl bg-rose-500/15 border border-rose-500/30 p-3 text-xs font-bold text-rose-300">
+          <AlertTriangle className="h-4 w-4 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+          {transfer.message}
         </p>
       )}
 
       {transfer.step === "done" && (
         <div className="rounded-2xl bg-emerald-500/15 border border-emerald-500/30 p-5 text-xs text-slate-200">
-          <p className="font-extrabold text-emerald-400 text-sm">
-            ✓ Successfully Listed & Transferred!
+          <p className="flex items-center gap-1.5 text-sm font-extrabold text-emerald-400">
+            <CheckCircle2 className="h-4 w-4 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+            Successfully Listed &amp; Transferred!
           </p>
           <p className="mt-2 leading-relaxed">
             The new owner on DataHub is <strong className="text-white">{transfer.newGarment.owner_id}</strong>.
@@ -86,9 +89,10 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
           <div className="mt-3">
             <Link
               href={`/listing/${transfer.newGarment.garment_id}`}
-              className="inline-block rounded-full bg-emerald-400/20 px-4 py-1.5 text-xs font-extrabold text-emerald-300 underline hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/20 px-4 py-1.5 text-xs font-extrabold text-emerald-300 underline hover:text-white"
             >
-              View Buyer&apos;s Resale Vault Entry ({transfer.newGarment.garment_id}) →
+              View Buyer&apos;s Resale Vault Entry ({transfer.newGarment.garment_id})
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
             </Link>
           </div>
         </div>
@@ -100,7 +104,7 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
           type="button"
           onClick={handleViewLineage}
           disabled={lineage.step === "loading"}
-          className="min-h-[44px] w-full rounded-full glass-card border border-white/15 px-6 text-xs font-extrabold uppercase tracking-wider text-slate-300 transition hover:bg-white/10 hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-400"
+          className="min-h-[44px] w-full rounded-full glass-card border border-white/15 px-6 text-xs font-extrabold uppercase tracking-wider text-slate-300 transition hover:bg-white/10 hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
         >
           {lineage.step === "loading"
             ? "Fetching Provenance Chain..."
@@ -108,12 +112,15 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
         </button>
 
         {lineage.step === "error" && (
-          <p className="mt-3 text-xs font-bold text-rose-400">⚠️ {lineage.message}</p>
+          <p className="mt-3 flex items-center gap-1.5 text-xs font-bold text-rose-400">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+            {lineage.message}
+          </p>
         )}
 
         {lineage.step === "done" && (
-          <div className="mt-4 glass-panel rounded-2xl p-4 border border-fuchsia-500/30">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-fuchsia-400">
+          <div className="mt-4 glass-panel rounded-2xl p-4 border border-indigo-500/30">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400">
               Verifiable Ownership Lineage
             </span>
             <ol className="mt-3 space-y-2 text-xs">
@@ -122,12 +129,12 @@ export default function ListingActions({ garmentId }: { garmentId: string }) {
                   key={node.urn}
                   className="flex items-center gap-3 rounded-xl bg-white/5 p-3 border border-white/10"
                 >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-fuchsia-500/20 text-[10px] font-black text-fuchsia-300">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-[10px] font-black text-indigo-300">
                     #{i + 1}
                   </span>
                   <div>
                     <p className="font-bold text-white">
-                      Owner: <span className="text-[#d9ff3b]">{node.owner_id}</span>
+                      Owner: <span className="text-[#38bdf8]">{node.owner_id}</span>
                     </p>
                     <code className="text-[10px] text-slate-400 truncate block max-w-xs font-mono">
                       ID: {node.garment_id}

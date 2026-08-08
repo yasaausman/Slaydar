@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0d0714;
+  --background: #070c1a;
   --foreground: #f8fafc;
-  --page-gradient: radial-gradient(ellipse at 50% 0%, #240c42 0%, #0d0714 65%, #050209 100%);
+  --page-gradient: radial-gradient(ellipse at 50% 0%, #0a1830 0%, #070c1a 65%, #02040a 100%);
 }
 
 @theme inline {
@@ -11,35 +11,69 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 
-  --color-obsidian: #0d0714;
-  --color-obsidian-card: #150c22;
+  --color-obsidian: #070c1a;
+  --color-obsidian-card: #0b1120;
   --color-obsidian-border: rgba(255, 255, 255, 0.1);
-  --color-lime-slay: #d9ff3b;
-  --color-fuchsia-slay: #f43f5e;
-  --color-purple-glow: #a855f7;
+  --color-sky-slay: #38bdf8;
+  --color-indigo-slay: #f43f5e;
+  --color-blue-glow: #3b82f6;
   --color-indigo-slay: #6366f1;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0d0714;
+    --background: #070c1a;
     --foreground: #f8fafc;
-    --page-gradient: radial-gradient(ellipse at 50% 0%, #240c42 0%, #0d0714 65%, #050209 100%);
+    --page-gradient: radial-gradient(ellipse at 50% 0%, #0a1830 0%, #070c1a 65%, #02040a 100%);
   }
+}
+
+/* Paint the gradient on the root canvas so no white shows through when scrolled
+   past the body box (avoids background-attachment:fixed compositing gaps). */
+html {
+  background: var(--page-gradient);
+  background-attachment: fixed;
+  background-color: var(--background);
+  min-height: 100%;
 }
 
 body {
   background: var(--page-gradient);
   background-attachment: fixed;
+  background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   min-height: 100vh;
 }
 
-/* Glassmorphism utilities */
+/* ── Editorial display type (bold redesign) ─────────────────────────────── */
+.font-display {
+  font-family: var(--font-display), "Arial Narrow", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+/* Oversized editorial stat numbers */
+.stat-number {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hard editorial divider — the "brutalist" structural accent */
+.rule-hard {
+  border-top: 2px solid rgba(255, 255, 255, 0.14);
+}
+
+/* ── Glassmorphism utilities ────────────────────────────────────────────── */
 .glass-panel {
-  background: rgba(21, 12, 34, 0.65);
+  background: rgba(11, 17, 32, 0.65);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -58,18 +92,18 @@ body {
 
 .glass-card-hover:hover {
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(217, 255, 59, 0.3);
+  border-color: rgba(56, 189, 248, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(217, 255, 59, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.1);
 }
 
 /* Glowing text and keyframes */
-.text-glow-lime {
-  text-shadow: 0 0 12px rgba(217, 255, 59, 0.5);
+.text-glow-primary {
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
 }
 
-.text-glow-fuchsia {
-  text-shadow: 0 0 12px rgba(244, 63, 94, 0.5);
+.text-glow-secondary {
+  text-shadow: 0 0 12px rgba(129, 140, 248, 0.5);
 }
 
 @keyframes pulseGlow {
@@ -87,3 +121,35 @@ body {
   animation: pulseGlow 3s ease-in-out infinite;
 }
 
+/* Editorial bento entrance — staggered rise-in on load */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-rise-in {
+  opacity: 0;
+  animation: riseIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ── Accessibility: honor reduced-motion (design-system requirement) ─────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-rise-in {
+    opacity: 1;
+  }
+}

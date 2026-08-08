@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Link2, AlertTriangle, CheckCircle2, Search, ArrowRight } from "lucide-react";
 import { DEMO_OWNER_ID } from "@/lib/constants";
 import type { Garment } from "@/lib/mock-garments";
 import type { ExtractedGarment } from "@/lib/types";
@@ -76,9 +77,7 @@ export default function LinkResolveForm() {
   return (
     <div className="mt-12 border-t border-white/10 pt-8">
       <div className="flex items-center gap-2">
-        <span className="text-xl" role="img" aria-label="Link Icon">
-          🔗
-        </span>
+        <Link2 className="h-5 w-5 text-indigo-300" strokeWidth={2.25} aria-hidden="true" />
         <h2 className="text-base font-extrabold text-white">Or paste a retailer product link</h2>
       </div>
       <p className="mt-1 text-xs font-medium text-slate-400">
@@ -92,26 +91,27 @@ export default function LinkResolveForm() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://retailer.example.com/product/..."
-          className="min-h-[48px] flex-1 rounded-full border border-white/15 bg-white/5 px-5 text-xs text-white placeholder-slate-500 transition focus:border-[#d9ff3b] focus:outline-none focus:ring-2 focus:ring-[#d9ff3b]/40"
+          className="min-h-[48px] flex-1 rounded-full border border-white/15 bg-white/5 px-5 text-xs text-white placeholder-slate-500 transition focus-visible:border-[#38bdf8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]/40"
         />
         <button
           type="submit"
           disabled={stage.step === "resolving" || !url}
-          className="min-h-[48px] rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-6 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-fuchsia-500/20 transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400"
+          className="min-h-[48px] rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 px-6 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-indigo-500/20 transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
         >
           {stage.step === "resolving" ? "Extracting..." : "Resolve Link →"}
         </button>
       </form>
 
       {stage.step === "error" && (
-        <p className="mt-3 text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl">
-          ⚠️ {stage.message}
+        <p className="mt-3 flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs font-bold text-rose-400">
+          <AlertTriangle className="h-4 w-4 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+          {stage.message}
         </p>
       )}
 
       {(stage.step === "preview" || stage.step === "saving") && (
-        <div className="mt-4 glass-card rounded-2xl p-5 border border-fuchsia-500/30">
-          <p className="text-xs font-extrabold uppercase tracking-widest text-fuchsia-400">
+        <div className="mt-4 glass-card rounded-2xl p-5 border border-indigo-500/30">
+          <p className="text-xs font-extrabold uppercase tracking-widest text-indigo-400">
             Resolved Catalog Entry
           </p>
           <GarmentChips data={stage.data} />
@@ -119,30 +119,33 @@ export default function LinkResolveForm() {
             type="button"
             onClick={() => handleSave(stage.data)}
             disabled={stage.step === "saving"}
-            className="mt-4 min-h-[44px] rounded-full bg-[#d9ff3b] px-6 text-xs font-black uppercase tracking-wider text-[#0d0714] shadow-md transition hover:scale-105 disabled:opacity-40"
+            className="mt-4 inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full bg-[#38bdf8] px-6 text-xs font-black uppercase tracking-wider text-[#070c1a] shadow-md transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
           >
-            {stage.step === "saving" ? "Saving..." : "Save to Closet Vault ✓"}
+            {stage.step === "saving" ? "Saving..." : "Save to Closet Board"}
+            {stage.step !== "saving" && <CheckCircle2 className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />}
           </button>
 
           {crossMatch?.status === "checking" && (
             <p className="mt-3 text-xs text-slate-400 animate-pulse">Checking Slaydar network for twin garments...</p>
           )}
           {crossMatch?.status === "found" && (
-            <div className="mt-4 rounded-xl border border-fuchsia-500/40 bg-fuchsia-500/10 p-4 text-xs">
-              <p className="font-extrabold text-fuchsia-300">
-                🔎 Someone else in the network owns this exact garment!
+            <div className="mt-4 rounded-xl border border-indigo-500/40 bg-indigo-500/10 p-4 text-xs">
+              <p className="flex items-center gap-1.5 font-extrabold text-indigo-300">
+                <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+                Someone else in the network owns this exact garment!
               </p>
               <p className="mt-1 text-slate-300">
                 Owner <strong className="text-white">{crossMatch.garment.owner_id}</strong> has a{" "}
                 <span className="capitalize">{crossMatch.garment.color} {crossMatch.garment.category}</span>
                 {crossMatch.garment.brand ? ` (${crossMatch.garment.brand})` : ""}, condition score{" "}
-                <strong className="text-[#d9ff3b]">{crossMatch.garment.condition_score}</strong>.
+                <strong className="text-[#38bdf8]">{crossMatch.garment.condition_score}</strong>.
               </p>
               <Link
                 href={`/listing/${crossMatch.garment.garment_id}`}
-                className="mt-2 inline-block font-extrabold text-fuchsia-300 underline hover:text-white"
+                className="mt-2 inline-flex items-center gap-1 font-extrabold text-indigo-300 underline hover:text-white"
               >
-                View their resale listing →
+                View their resale listing
+                <ArrowRight className="h-3 w-3" strokeWidth={2.5} aria-hidden="true" />
               </Link>
             </div>
           )}
@@ -150,8 +153,9 @@ export default function LinkResolveForm() {
       )}
 
       {stage.step === "saved" && (
-        <p className="mt-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 p-3 text-xs font-bold text-emerald-400">
-          ✓ Saved to closet vault (<code className="text-white">{stage.garmentId}</code>)
+        <p className="mt-3 flex items-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 p-3 text-xs font-bold text-emerald-400">
+          <CheckCircle2 className="h-4 w-4 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+          Saved to closet board (<code className="text-white">{stage.garmentId}</code>)
         </p>
       )}
     </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LayoutGrid, Flame, Moon, Tag, Plus } from "lucide-react";
 import { mockGarments, type Garment } from "@/lib/mock-garments";
 import { DEMO_OWNER_ID } from "@/lib/constants";
 import { fetchCloset } from "@/lib/backend";
@@ -18,67 +19,79 @@ export default async function ClosetPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-12 text-white">
-      {/* Pinterest Board Header */}
+      {/* Board Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xl" role="img" aria-label="Pinterest Board Icon">
-              📌
-            </span>
-            <span className="text-xs font-black uppercase tracking-widest text-[#d9ff3b]">
+            <LayoutGrid className="h-4 w-4 text-[#38bdf8]" strokeWidth={2.5} aria-hidden="true" />
+            <span className="text-xs font-black uppercase tracking-widest text-[#38bdf8]">
               ishani&apos;s Wardrobe Board
             </span>
             <span
-              className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-widest border ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-widest border ${
                 live
                   ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                  : "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                  : "bg-blue-500/15 text-blue-300 border-blue-500/30"
               }`}
             >
+              <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald-400" : "bg-blue-400"}`} />
               {live ? "Live DataHub API" : "Mock Board Preview"}
             </span>
           </div>
-          <h1 className="mt-1 text-4xl font-black tracking-tight text-white sm:text-5xl">
-            Pinterest Closet Board
+          <h1 className="font-display mt-2 text-5xl text-white sm:text-6xl">
+            The Closet Board
           </h1>
-          <p className="mt-1.5 text-sm font-medium text-slate-300">
-            Aesthetic wardrobe catalog pins with real wear metrics and resale trust scores.
+          <p className="mt-2 text-sm font-medium text-slate-300">
+            Your wardrobe catalog with real wear metrics and resale trust scores.
           </p>
         </div>
 
         <Link
           href="/upload"
-          className="mt-4 sm:mt-0 inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[#d9ff3b] px-6 text-xs font-black uppercase tracking-wider text-[#0d0714] shadow-lg shadow-[#d9ff3b]/20 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#d9ff3b]"
+          className="mt-4 inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-full bg-[#38bdf8] px-6 text-xs font-black uppercase tracking-wider text-[#070c1a] shadow-lg shadow-[#38bdf8]/20 transition-all hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] sm:mt-0"
         >
-          <span>+ Pin new garment</span>
+          <Plus className="h-4 w-4" strokeWidth={3} aria-hidden="true" />
+          Pin new garment
         </Link>
       </div>
 
-      {/* Summary KPI Board Bar */}
+      {/* Summary KPI Board Bar — editorial stat tiles */}
       <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="glass-card rounded-2xl p-4 border border-white/10">
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
-            Total Pins
-          </span>
-          <p className="mt-1 text-2xl font-black text-white">{garments.length}</p>
+        <div className="glass-card flex items-center justify-between rounded-2xl border border-white/10 p-5">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+              Total Pins
+            </span>
+            <p className="stat-number mt-1 text-4xl text-white">{garments.length}</p>
+          </div>
+          <LayoutGrid className="h-6 w-6 text-slate-500" strokeWidth={2} aria-hidden="true" />
         </div>
-        <div className="glass-card rounded-2xl p-4 border border-rose-500/20 bg-rose-500/5">
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-400">
-            🔥 Overworn
-          </span>
-          <p className="mt-1 text-2xl font-black text-rose-300">{overwornCount}</p>
+        <div className="glass-card flex items-center justify-between rounded-2xl border border-rose-500/20 bg-rose-500/5 p-5">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-400">
+              Overworn
+            </span>
+            <p className="stat-number mt-1 text-4xl text-rose-300">{overwornCount}</p>
+          </div>
+          <Flame className="h-6 w-6 text-rose-400" strokeWidth={2} aria-hidden="true" />
         </div>
-        <div className="glass-card rounded-2xl p-4 border border-amber-500/20 bg-amber-500/5">
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400">
-            💤 Forgotten
-          </span>
-          <p className="mt-1 text-2xl font-black text-amber-300">{unwornCount}</p>
+        <div className="glass-card flex items-center justify-between rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400">
+              Forgotten
+            </span>
+            <p className="stat-number mt-1 text-4xl text-amber-300">{unwornCount}</p>
+          </div>
+          <Moon className="h-6 w-6 text-amber-400" strokeWidth={2} aria-hidden="true" />
         </div>
-        <div className="glass-card rounded-2xl p-4 border border-cyan-500/20 bg-cyan-500/5">
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-cyan-400">
-            🏷️ Resale Ready
-          </span>
-          <p className="mt-1 text-2xl font-black text-cyan-300">{resaleCount}</p>
+        <div className="glass-card flex items-center justify-between rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-cyan-400">
+              Resale Ready
+            </span>
+            <p className="stat-number mt-1 text-4xl text-cyan-300">{resaleCount}</p>
+          </div>
+          <Tag className="h-6 w-6 text-cyan-400" strokeWidth={2} aria-hidden="true" />
         </div>
       </div>
 

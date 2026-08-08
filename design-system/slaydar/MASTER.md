@@ -1,0 +1,239 @@
+# Design System Master File
+
+> **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
+> If that file exists, its rules **override** this Master file.
+> If not, strictly follow the rules below.
+
+---
+
+**Project:** Slaydar
+**Generated:** 2026-08-08 11:06:46
+**Category:** Wardrobe & Outfit Planner
+**Design Dials:** Variance 8/10 (Bold / Asymmetric) | Motion 7/10 (Standard) | Density 5/10 (Standard)
+
+---
+
+## Global Rules
+
+### Color Palette
+
+> ⚠️ **OVERRIDDEN from the raw DB output.** The database returned a *light* "fashion rose"
+> palette, which contradicts Slaydar's established dark-neon OLED identity. We keep the
+> existing dark identity and apply the bold direction to **layout + typography**, not by
+> switching to a light theme. Palette below is Slaydar's real one.
+
+| Role | Hex | CSS Variable |
+|------|-----|--------------|
+| Background (OLED) | `#0d0714` | `--color-obsidian` |
+| Surface / Card | `#150c22` | `--color-obsidian-card` |
+| Border | `rgba(255,255,255,0.10)` | `--color-obsidian-border` |
+| Foreground | `#f8fafc` | `--color-foreground` |
+| Primary / CTA (Lime) | `#d9ff3b` | `--color-lime-slay` |
+| Secondary (Fuchsia) | `#f43f5e` | `--color-fuchsia-slay` |
+| Accent (Purple glow) | `#a855f7` | `--color-purple-glow` |
+| Indigo | `#6366f1` | `--color-indigo-slay` |
+| Destructive | `#f43f5e` | (reuse fuchsia) |
+| Ring / Focus | `#d9ff3b` | `--color-lime-slay` |
+
+**Color Notes:** Dark OLED obsidian base with lime + fuchsia + purple neon accents. Page
+uses a radial purple→obsidian gradient (`--page-gradient`). Already defined in
+`web/src/app/globals.css` — reuse, don't redefine.
+
+### Typography
+
+- **Heading Font:** Anton
+- **Body Font:** Epilogue
+- **Mood:** brutal, loud, shouty, meme, internet, bold
+- **Google Fonts:** [Anton + Epilogue](https://fonts.googleapis.com/css2?family=Anton&family=Epilogue:wght@400;500;600;700&display=swap)
+
+**CSS Import:**
+```css
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Epilogue:wght@400;500;600;700&display=swap');
+```
+
+### Spacing Variables
+
+*Density: 5/10 — Standard*
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
+| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
+| `--space-md` | `16px` / `1rem` | Standard padding |
+| `--space-lg` | `24px` / `1.5rem` | Section padding |
+| `--space-xl` | `32px` / `2rem` | Large gaps |
+| `--space-2xl` | `48px` / `3rem` | Section margins |
+| `--space-3xl` | `64px` / `4rem` | Hero padding |
+
+### Shadow Depths
+
+| Level | Value | Usage |
+|-------|-------|-------|
+| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
+| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
+| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
+| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
+
+---
+
+## Component Specs
+
+### Buttons
+
+```css
+/* Primary Button */
+.btn-primary {
+  background: #D97706;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 200ms ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background: transparent;
+  color: #BE185D;
+  border: 2px solid #BE185D;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 200ms ease;
+  cursor: pointer;
+}
+```
+
+### Cards
+
+```css
+.card {
+  background: #FDF2F8;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  transition: all 200ms ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+```
+
+### Inputs
+
+```css
+.input {
+  padding: 12px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 200ms ease;
+}
+
+.input:focus {
+  border-color: #BE185D;
+  outline: none;
+  box-shadow: 0 0 0 3px #BE185D20;
+}
+```
+
+### Modals
+
+```css
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow-xl);
+  max-width: 500px;
+  width: 90%;
+}
+```
+
+---
+
+## Style Guidelines
+
+**Style:** Brutalism
+
+**Keywords:** Raw, unpolished, stark, high contrast, plain text, default fonts, visible borders, asymmetric, anti-design
+
+**Best For:** Design portfolios, artistic projects, counter-culture brands, editorial/media sites, tech blogs
+
+**Key Effects (as applied to Slaydar — a *fusion*, not literal brutalism):**
+- ✅ **Adopt:** oversized display typography (Anton, 700+), asymmetric bento grid, visible
+  structure/large blocks, editorial big-number stats, hard-edged section dividers.
+- ✅ **Keep from current identity:** neon glow accents, 150–300ms transitions, tasteful
+  glassmorphism on cards, radial gradient background.
+- ❌ **Do NOT adopt from pure brutalism:** light background, sharp 0px corners everywhere,
+  removing all transitions, default system fonts. These would kill Slaydar's identity.
+
+### Page Pattern
+
+**Pattern Name:** AI Personalization Landing
+
+- **Conversion Strategy:** 20%+ conversion with personalization. Requires analytics integration. Fallback for new users.
+- **CTA Placement:** Context-aware placement based on user segment
+- **Section Order:** 1. Dynamic hero (personalized), 2. Relevant features, 3. Tailored testimonials, 4. Smart CTA
+
+---
+
+## Motion
+
+**Stagger List** (Standard) — Trigger: load or scroll | Duration: 300-450ms | Easing: `back.out(1.4)`
+
+```js
+gsap.from('.grid-item', { opacity: 0, scale: 0.92, y: 16, duration: 0.4, stagger: { each: 0.06, from: 'start', grid: 'auto' }, ease: 'back.out(1.4)' });
+```
+
+**Framework notes:** grid: 'auto' lets GSAP infer rows/columns from a CSS grid layout for a natural wave stagger
+
+- ✅ Combine with from: 'center' for a bento-grid layout to draw the eye inward first
+- ❌ Don't use back.out on dense data tables; the overshoot reads as sloppy on informational UI
+- ⚡ Group DOM writes; avoid interleaving layout reads (getBoundingClientRect) between staggered tweens
+
+---
+
+## Anti-Patterns (Do NOT Use)
+
+- ❌ Excessive decoration
+
+### Additional Forbidden Patterns
+
+- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
+- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
+- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
+- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
+- ❌ **Instant state changes** — Always use transitions (150-300ms)
+- ❌ **Invisible focus states** — Focus states must be visible for a11y
+
+---
+
+## Pre-Delivery Checklist
+
+Before delivering any UI code, verify:
+
+- [ ] No emojis used as icons (use SVG instead)
+- [ ] All icons from consistent icon set (Heroicons/Lucide)
+- [ ] `cursor-pointer` on all clickable elements
+- [ ] Hover states with smooth transitions (150-300ms)
+- [ ] Light mode: text contrast 4.5:1 minimum
+- [ ] Focus states visible for keyboard navigation
+- [ ] `prefers-reduced-motion` respected
+- [ ] Responsive: 375px, 768px, 1024px, 1440px
+- [ ] No content hidden behind fixed navbars
+- [ ] No horizontal scroll on mobile
