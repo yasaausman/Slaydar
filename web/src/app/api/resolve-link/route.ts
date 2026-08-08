@@ -63,13 +63,27 @@ export async function POST(req: NextRequest) {
         "Upgrade-Insecure-Requests": "1",
       },
     });
-    if (!res.ok) throw new Error(`Fetching the page failed with ${res.status}`);
+    if (!res.ok) {
+      // Enterprise bot walls (Akamai/PerimeterX on Levi's, H&M, Nike, etc.) block
+      // any server-side fetch regardless of headers. Make that a clear, actionable
+      // message instead of a raw status so it reads as intentional, not broken.
+      if (res.status === 403 || res.status === 401 || res.status === 429) {
+        const host = new URL(url).hostname.replace(/^www\./, "");
+        throw new Error(
+          `${host} blocks automated access, so its page can't be read. Try a different store (Uniqlo, Gap, Allbirds and most Shopify shops work) — or just upload a photo instead.`
+        );
+      }
+      throw new Error(`Couldn't read that page (HTTP ${res.status}). Try a different link or upload a photo.`);
+    }
     html = (await res.text()).slice(0, 300_000);
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Could not fetch that URL" },
-      { status: 502 }
-    );
+    const message =
+      err instanceof Error
+        ? err.name === "TimeoutError" || err.name === "AbortError"
+          ? "That page took too long to respond. Try a different link or upload a photo."
+          : err.message
+        : "Could not fetch that URL";
+    return NextResponse.json({ error: message }, { status: 502 });
   }
 
   const pageSignal = extractPageSignal(html);
